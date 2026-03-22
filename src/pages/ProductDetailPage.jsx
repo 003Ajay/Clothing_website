@@ -15,13 +15,33 @@ const RESPONSIVE_CSS = `
     .pdp-sticky { 
       position: static !important; 
       width: 100% !important; 
-      padding: 32px 20px !important; 
+      padding: 24px 20px !important; 
+      box-sizing: border-box !important;
     }
-    .pdp-gallery-container { 
-      margin-bottom: 0 !important; 
+    .pdp-size-grid {
+      display: flex !important;
+      flex-wrap: wrap !important;
     }
-    .pdp-carousel-dots { 
-      bottom: 20px !important; 
+    .pdp-size-grid > button {
+      flex: 1 0 25% !important;
+      border: 1px solid #e5e7eb !important;
+    }
+    .pdp-size-header {
+      flex-direction: column !important;
+      align-items: flex-start !important;
+      gap: 12px !important;
+    }
+    .pdp-title {
+      font-size: 24px !important;
+      line-height: 1.2 !important;
+      overflow-wrap: break-word !important;
+      word-wrap: break-word !important;
+      width: 100% !important;
+      display: block !important;
+    }
+    .pdp-price-row {
+      gap: 12px !important;
+      flex-wrap: wrap !important;
     }
   }
   .thumb-scroll::-webkit-scrollbar { display: none; }
@@ -85,7 +105,7 @@ const ProductDetailPage = () => {
   };
 
   return (
-    <main style={{ background: '#fff', minHeight: '100vh', paddingTop: 0 }}>
+    <main style={{ background: '#fff', minHeight: '100vh', paddingTop: 0, overflowX: 'hidden' }}>
       <style>{RESPONSIVE_CSS}</style>
       
       {/* 1. Promo Bar (Pinned below fixed Navbar for visibility) */}
@@ -93,7 +113,7 @@ const ProductDetailPage = () => {
         marginTop: 70,
         background: '#f5f5f5', 
         color: '#000', 
-        padding: '12px 0', 
+        padding: '12px 16px', 
         textAlign: 'center', 
         fontSize: 12, 
         fontWeight: 700, 
@@ -103,7 +123,9 @@ const ProductDetailPage = () => {
         alignItems: 'center', 
         justifyContent: 'center', 
         gap: 12, 
-        borderBottom: '1px solid #eee'
+        borderBottom: '1px solid #eee',
+        width: '100%',
+        boxSizing: 'border-box'
       }}>
         15% Student Discount 🎓
         <div style={{ width: 16, height: 16, display: 'flex', alignItems: 'center', justifyContent: 'center', border: '1.5px solid #000', borderRadius: '50%', cursor: 'pointer' }}>
@@ -113,10 +135,10 @@ const ProductDetailPage = () => {
 
       <div style={{ paddingBottom: 80 }}>
         {/* Product Layout Grid */}
-        <div className="pdp-grid" style={{ maxWidth: 1200, margin: '0 auto', display: 'grid', gridTemplateColumns: 'minmax(0, 1.3fr) 0.7fr', alignItems: 'start' }}>
+        <div className="pdp-grid" style={{ maxWidth: 1200, margin: '0 auto', display: 'grid', gridTemplateColumns: 'minmax(0, 1.3fr) 0.7fr', alignItems: 'start', width: '100%' }}>
           
           {/* ─ Left: Gallery Column ─ */}
-          <div className="pdp-gallery-container" style={{ position: 'relative' }}>
+          <div className="pdp-gallery-container" style={{ position: 'relative', width: '100%' }}>
             <div style={{ position: 'relative', aspectRatio: '4/5', background: '#f5f5f5', overflow: 'hidden' }}>
               <motion.img
                 key={`${activeImg}-${activeVariant.name}`}
@@ -176,11 +198,14 @@ const ProductDetailPage = () => {
               30% OFF | SAVE US$18
             </div>
 
-            <h1 style={{ fontFamily: 'Outfit, sans-serif', fontSize: 'clamp(24px, 3.5vw, 32px)', fontWeight: 900, textTransform: 'uppercase', letterSpacing: '-0.02em', lineHeight: 1.1, marginBottom: 12 }}>
+            <h1 
+              className="pdp-title"
+              style={{ fontFamily: 'Outfit, sans-serif', fontSize: 'clamp(24px, 3.5vw, 32px)', fontWeight: 900, textTransform: 'uppercase', letterSpacing: '-0.02em', lineHeight: 1.1, marginBottom: 12 }}
+            >
               {product.name}
             </h1>
 
-            <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 32 }}>
+            <div className="pdp-price-row" style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 32 }}>
               <span style={{ fontSize: 18, fontWeight: 900 }}>US${(product.price / 30).toFixed(0)}</span>
               <span style={{ fontSize: 18, color: '#f43f5e', textDecoration: 'line-through', fontWeight: 800 }}>US${((product.price / 30) * 1.4).toFixed(0)}</span>
             </div>
@@ -228,19 +253,19 @@ const ProductDetailPage = () => {
 
             {/* Size Selection */}
             <div style={{ marginBottom: 40 }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
+              <div className="pdp-size-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
                 <p style={{ fontSize: 13, fontWeight: 800 }}>Select a size</p>
                 <button style={{ fontSize: 12, fontWeight: 900, textDecoration: 'underline', display: 'flex', alignItems: 'center', gap: 4, cursor: 'pointer' }}>
-                  <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M2 9l3 3-3 3'/%3E%3Cpath d='M22 9l-3 3 3 3'/%3E%3Cpath d='M5 12h14'/%3E%3Cpath d='M12 2v20'/%3E%3C/svg%3E" alt="Size Guide" style={{ width: 16, height: 16 }} />
-                  Size Guide
+                  <Ruler size={14} /> Size Guide
                 </button>
               </div>
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: 0, border: '1px solid #e5e7eb', borderRadius: 4, overflow: 'hidden' }}>
+              <div className="pdp-size-grid" style={{ display: 'flex', border: '1px solid #e5e7eb', borderRadius: 4, overflow: 'hidden' }}>
                 {SIZES.map(s => (
                   <button
                     key={s}
                     onClick={() => setSelectedSize(s)}
                     style={{
+                      flex: 1,
                       padding: '16px 0',
                       borderRight: '1px solid #e5e7eb',
                       background: selectedSize === s ? '#f5f5f5' : '#fff',

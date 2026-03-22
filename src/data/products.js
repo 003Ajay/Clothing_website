@@ -3,25 +3,25 @@ export const CATEGORIES = [
     id: 'oversized',
     name: 'Oversized T-Shirts',
     slug: 'oversized-tshirts',
-    image: 'https://images.unsplash.com/photo-1596755094514-f87e34085b2c?auto=format&fit=crop&q=80&w=800'
+    image: 'https://images.unsplash.com/photo-1543076447-215ad9ba6923?auto=format&fit=crop&q=80&w=800'
   },
   {
     id: 'gym',
     name: 'Gym Wear',
     slug: 'gym-wear',
-    image: 'https://images.unsplash.com/photo-1517836357463-d25dfeac3438?auto=format&fit=crop&q=80&w=800'
+    image: 'https://images.unsplash.com/photo-1571019613484-297032c1b911?auto=format&fit=crop&q=80&w=800'
   },
   {
     id: 'casual',
     name: 'Casual Wear',
     slug: 'casual-wear',
-    image: 'https://images.unsplash.com/photo-1503341504253-dff4815485f1?auto=format&fit=crop&q=80&w=800'
+    image: 'https://images.unsplash.com/photo-1554568218-0f1715e72254?auto=format&fit=crop&q=80&w=800'
   },
   {
     id: 'travel',
     name: 'Travel Wear',
     slug: 'travel-wear',
-    image: 'https://images.unsplash.com/photo-1527719327859-c6ce80353573?auto=format&fit=crop&q=80&w=800'
+    image: 'https://images.unsplash.com/photo-1556821840-3a63f95609a7?auto=format&fit=crop&q=80&w=800'
   }
 ];
 
@@ -32,7 +32,7 @@ export const PRODUCTS = [
     price: 1499,
     category: 'oversized',
     slug: 'phantom-oversized-tee-obsidian-black',
-    image: 'https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?auto=format&fit=crop&q=80&w=800',
+    image: 'https://images.unsplash.com/photo-1583743814966-8936f5b7be1a?auto=format&fit=crop&q=80&w=800',
     description: 'The ultimate oversized fit. Heavyweight 240GSM cotton, dropped shoulders, and a structured silhouette.',
     fabrics: '100% Premium Combed Cotton, 240 GSM',
     fit: 'Relaxed Oversized Fit',
@@ -45,7 +45,7 @@ export const PRODUCTS = [
     price: 1299,
     category: 'gym',
     slug: 'velocity-tech-gym-tee-stealth-grey',
-    image: 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?auto=format&fit=crop&q=80&w=800',
+    image: 'https://images.unsplash.com/photo-1581009146145-b5ef050c2e1e?auto=format&fit=crop&q=80&w=800',
     description: 'High-performance moisture-wicking fabric designed for intense workouts. Breathable and stretch-ready.',
     fabrics: '88% Polyester, 12% Elastane',
     fit: 'Athletic Fit',

@@ -64,7 +64,7 @@ const Navbar = () => {
 
   return (
     <>
-      <nav 
+      <nav
         onMouseLeave={() => setIsExploreOpen(false)}
         style={{
           position: 'fixed', top: 0, left: 0, width: '100%', zIndex: 2000,
@@ -77,21 +77,21 @@ const Navbar = () => {
           alignItems: 'center'
         }}
       >
-        <div 
+        <div
           className="navbar-container"
-          style={{ 
-            maxWidth: 1440, 
-            margin: '0 auto', 
-            width: '100%', 
-            padding: '0 40px', 
-            display: 'grid', 
-            gridTemplateColumns: '1fr auto 1fr', 
-            alignItems: 'center', 
+          style={{
+            maxWidth: 1440,
+            margin: '0 auto',
+            width: '100%',
+            padding: '0 40px',
+            display: 'grid',
+            gridTemplateColumns: '1fr auto 1fr',
+            alignItems: 'center',
             position: 'relative',
             height: '100%'
           }}
         >
-          
+
           {/* Left: Nav Links / Mobile Toggle */}
           <div style={{ display: 'flex', alignItems: 'center' }}>
             <div style={{ display: 'flex', gap: 20, alignItems: 'center' }} className="desktop-nav">
@@ -117,14 +117,14 @@ const Navbar = () => {
               >
                 Explore
                 {isExploreOpen && (
-                  <motion.div 
+                  <motion.div
                     layoutId="nav-underline"
-                    style={{ position: 'absolute', bottom: 18, left: 0, right: 0, height: 2, background: '#000' }} 
+                    style={{ position: 'absolute', bottom: 18, left: 0, right: 0, height: 2, background: '#000' }}
                   />
                 )}
               </Link>
             </div>
-            
+
             <button
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
               style={{ padding: '8px 8px 8px 0', display: 'none', cursor: 'pointer', color: '#000', background: 'none', border: 'none' }}
@@ -139,24 +139,24 @@ const Navbar = () => {
             <Link
               to="/"
               style={{
-                fontFamily: 'Outfit, sans-serif', fontWeight: 900, fontSize: 'clamp(18px, 4vw, 24px)',
-                letterSpacing: '-0.02em', textTransform: 'uppercase', color: '#000', whiteSpace: 'nowrap', textDecoration: 'none'
+                fontFamily: 'Inter, sans-serif', fontWeight: 900, fontSize: 'clamp(20px, 4vw, 22px)',
+                letterSpacing: '-0.03em', textTransform: 'uppercase', color: '#000', whiteSpace: 'nowrap', textDecoration: 'none'
               }}
             >
-              PORTER <span style={{ color: '#ccc' }}>&</span> BOAT
+              PORTER & BOAT
             </Link>
           </div>
 
           {/* Right: Icons */}
           <div style={{ display: 'flex', alignItems: 'center', gap: 8, justifyContent: 'flex-end' }}>
-            <button 
+            <button
               onClick={() => setIsSearchOpen(!isSearchOpen)}
               style={{ padding: 8, cursor: 'pointer', color: '#000', background: 'none', border: 'none' }} aria-label="Search"
             >
               {isSearchOpen ? <X size={22} strokeWidth={1.5} /> : <Search size={22} strokeWidth={1.5} />}
             </button>
-            <Link 
-              to="/wishlist" 
+            <Link
+              to="/wishlist"
               className="icon-hide-mobile"
               style={{ padding: 8, cursor: 'pointer', color: '#000', position: 'relative', display: 'flex', alignItems: 'center', textDecoration: 'none' }} aria-label="Wishlist"
             >
@@ -164,8 +164,8 @@ const Navbar = () => {
               {wishlist.length > 0 && (
                 <span style={{
                   position: 'absolute', top: 4, right: 4,
-                  background: '#000', color: '#fff', borderRadius: '50%',
-                  width: 14, height: 14, fontSize: 8, fontWeight: 700,
+                  background: 'var(--color-black)', color: '#fff', borderRadius: '50%',
+                  width: 14, height: 14, fontSize: 8, fontWeight: 900,
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
                 }}>
                   {wishlist.length}
@@ -182,8 +182,8 @@ const Navbar = () => {
               {cartCount > 0 && (
                 <span style={{
                   position: 'absolute', top: 4, right: 4,
-                  background: '#005b96', color: '#fff', borderRadius: '50%',
-                  width: 16, height: 16, fontSize: 9, fontWeight: 700,
+                  background: 'var(--color-black)', color: '#fff', borderRadius: '50%',
+                  width: 15, height: 15, fontSize: 9, fontWeight: 900,
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
                 }}>
                   {cartCount}
@@ -270,7 +270,7 @@ const Navbar = () => {
               }}
             >
               <form onSubmit={handleSearch} style={{ width: '100%', maxWidth: 600, position: 'relative' }}>
-                <input 
+                <input
                   autoFocus
                   type="text"
                   placeholder="Search products..."
@@ -291,48 +291,48 @@ const Navbar = () => {
           )}
         </AnimatePresence>
 
-      {/* Mobile Menu */}
-      <AnimatePresence>
-        {isMobileMenuOpen && (
-          <motion.div
-            initial={{ x: '-100%' }}
-            animate={{ x: 0 }}
-            exit={{ x: '-100%' }}
-            transition={{ type: 'tween', duration: 0.3 }}
-            style={{
-              position: 'fixed', top: 70, left: 0, bottom: 0, width: '100%',
-              background: '#fff', zIndex: 1900, padding: '40px 24px',
-              display: 'flex', flexDirection: 'column', gap: 24, overflowY: 'auto'
-            }}
-          >
-            {categories.map(cat => (
-              <Link 
-                key={cat.id} 
-                to={`/category/${cat.slug}`}
+        {/* Mobile Menu */}
+        <AnimatePresence>
+          {isMobileMenuOpen && (
+            <motion.div
+              initial={{ x: '-100%' }}
+              animate={{ x: 0 }}
+              exit={{ x: '-100%' }}
+              transition={{ type: 'tween', duration: 0.3 }}
+              style={{
+                position: 'fixed', top: 70, left: 0, bottom: 0, width: '100%',
+                background: '#fff', zIndex: 1900, padding: '40px 24px',
+                display: 'flex', flexDirection: 'column', gap: 24, overflowY: 'auto'
+              }}
+            >
+              {categories.map(cat => (
+                <Link
+                  key={cat.id}
+                  to={`/category/${cat.slug}`}
+                  style={{ fontSize: 20, fontWeight: 700, color: '#000', textDecoration: 'none', textTransform: 'uppercase' }}
+                >
+                  {cat.name}
+                </Link>
+              ))}
+              <Link
+                to="/category/all"
                 style={{ fontSize: 20, fontWeight: 700, color: '#000', textDecoration: 'none', textTransform: 'uppercase' }}
               >
-                {cat.name}
+                Explore All
               </Link>
-            ))}
-            <Link 
-              to="/category/all"
-              style={{ fontSize: 20, fontWeight: 700, color: '#000', textDecoration: 'none', textTransform: 'uppercase' }}
-            >
-              Explore All
-            </Link>
-            <div style={{ marginTop: 'auto', borderTop: '1px solid #f0f0f0', paddingTop: 24, display: 'flex', flexDirection: 'column', gap: 16 }}>
-              <Link to="/wishlist" style={{ display: 'flex', alignItems: 'center', gap: 12, fontSize: 16, fontWeight: 600, color: '#333', textDecoration: 'none' }}>
-                <Heart size={20} /> Wishlist ({wishlist.length})
-              </Link>
-              <button style={{ display: 'flex', alignItems: 'center', gap: 12, fontSize: 16, fontWeight: 600, color: '#333', background: 'none', border: 'none', padding: 0 }}>
-                <User size={20} /> Account
-              </button>
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+              <div style={{ marginTop: 'auto', borderTop: '1px solid #f0f0f0', paddingTop: 24, display: 'flex', flexDirection: 'column', gap: 16 }}>
+                <Link to="/wishlist" style={{ display: 'flex', alignItems: 'center', gap: 12, fontSize: 16, fontWeight: 600, color: '#333', textDecoration: 'none' }}>
+                  <Heart size={20} /> Wishlist ({wishlist.length})
+                </Link>
+                <button style={{ display: 'flex', alignItems: 'center', gap: 12, fontSize: 16, fontWeight: 600, color: '#333', background: 'none', border: 'none', padding: 0 }}>
+                  <User size={20} /> Account
+                </button>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
 
-      <style>{`
+        <style>{`
         @media (max-width: 1024px) {
           .desktop-nav { display: none !important; }
           .mobile-toggle { display: block !important; }
@@ -343,7 +343,7 @@ const Navbar = () => {
           .icon-hide-mobile { display: none !important; }
         }
       `}</style>
-    </nav>
+      </nav>
     </>
   );
 };

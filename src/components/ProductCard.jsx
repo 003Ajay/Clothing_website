@@ -45,11 +45,11 @@ const ProductCard = ({ product }) => {
           }}
           aria-label={isWishlisted ? "Remove from wishlist" : "Add to wishlist"}
         >
-          <Heart 
-            size={18} 
-            fill={isWishlisted ? "#000" : "none"} 
-            stroke={isWishlisted ? "#000" : "#000"} 
-            strokeWidth={1.5} 
+          <Heart
+            size={18}
+            fill={isWishlisted ? "#000" : "none"}
+            stroke={isWishlisted ? "#000" : "#000"}
+            strokeWidth={1.5}
           />
         </button>
 
