@@ -19,7 +19,7 @@ const fadeUp = {
 const HomePage = () => {
   const { products, categories } = useAdmin();
   const scrollRef = React.useRef(null);
-  const [activeId, setActiveId] = React.useState(null);
+  const [activeIndex, setActiveIndex] = React.useState(null);
   const bestSellers = products.filter(p => p.bestSeller);
 
   const displayCategories = React.useMemo(() => {
@@ -33,11 +33,15 @@ const HomePage = () => {
       (entries) => {
         entries.forEach(entry => {
           if (entry.isIntersecting && entry.intersectionRatio >= 0.5) {
-            setActiveId(entry.target.dataset.id);
+            setActiveIndex(parseInt(entry.target.dataset.index, 10));
           }
         });
       },
-      { root: scrollRef.current, threshold: 0.5, rootMargin: '0px -25% 0px -25%' }
+      { 
+        root: scrollRef.current, 
+        threshold: 0.6, 
+        rootMargin: '0px -10% 0px -10%' 
+      }
     );
 
     const items = scrollRef.current?.querySelectorAll('.grid-scroll');
@@ -56,7 +60,7 @@ const HomePage = () => {
       if (targetItem) {
         const scrollAmount = targetItem.offsetLeft - (parent.offsetWidth / 2) + (targetItem.offsetWidth / 2);
         parent.scrollLeft = scrollAmount;
-        setActiveId(categories[0].id);
+        setActiveIndex(middleIndex);
       }
     }
   }, [categories]);
@@ -67,15 +71,18 @@ const HomePage = () => {
     const parent = scrollRef.current;
     const { scrollLeft, scrollWidth, offsetWidth } = parent;
 
-    // Boundary thresholds (1/3 and 2/3 of content)
-    const singleSetWidth = scrollWidth / 3;
+    const items = parent.querySelectorAll('.grid-scroll');
+    if (items.length < categories.length * 2) return;
+
+    // Calculate the distance between identical items in consecutive sets
+    const setOffset = items[categories.length].offsetLeft - items[0].offsetLeft;
     
-    if (scrollLeft <= 50) {
+    if (scrollLeft <= 30) {
       // Near start, jump to same spot in set 2
-      parent.scrollLeft = scrollLeft + singleSetWidth;
-    } else if (scrollLeft >= (scrollWidth - offsetWidth - 50)) {
+      parent.scrollLeft = scrollLeft + setOffset;
+    } else if (scrollLeft >= (scrollWidth - offsetWidth - 30)) {
       // Near end, jump to same spot in set 2
-      parent.scrollLeft = scrollLeft - singleSetWidth;
+      parent.scrollLeft = scrollLeft - setOffset;
     }
   };
 
@@ -84,25 +91,27 @@ const HomePage = () => {
       const parent = scrollRef.current;
       const items = parent.querySelectorAll('.grid-scroll');
       
+      const containerCenter = parent.offsetWidth / 2;
+      const currentCenter = parent.scrollLeft + containerCenter;
+
       let closestIndex = 0;
       let minDistance = Infinity;
-      const center = parent.scrollLeft + (parent.offsetWidth / 2);
 
       items.forEach((item, idx) => {
         const itemCenter = item.offsetLeft + (item.offsetWidth / 2);
-        const distance = Math.abs(center - itemCenter);
+        const distance = Math.abs(currentCenter - itemCenter);
         if (distance < minDistance) {
           minDistance = distance;
           closestIndex = idx;
         }
       });
 
-      const nextIndex = direction === 'left' ? closestIndex - 1 : closestIndex + 1;
-      const targetItem = items[nextIndex];
+      const targetIndex = direction === 'left' ? closestIndex - 1 : closestIndex + 1;
+      const targetItem = items[targetIndex];
       
       if (targetItem) {
-        const scrollAmount = targetItem.offsetLeft - (parent.offsetWidth / 2) + (targetItem.offsetWidth / 2);
-        parent.scrollTo({ left: scrollAmount, behavior: 'smooth' });
+        const targetScrollLeft = targetItem.offsetLeft - containerCenter + (targetItem.offsetWidth / 2);
+        parent.scrollTo({ left: targetScrollLeft, behavior: 'smooth' });
       }
     }
   };
@@ -237,25 +246,36 @@ const HomePage = () => {
             {displayCategories.map((cat, idx) => (
               <motion.div 
                 key={`${cat.id}-${idx}`} 
-                data-id={cat.id}
+                data-index={idx}
                 variants={fadeUp} 
                 className="grid-scroll"
                 animate={{ 
-                  scale: activeId === cat.id ? 1.15 : 0.85,
-                  opacity: activeId === cat.id ? 1 : 0.4,
-                  filter: activeId === cat.id ? 'grayscale(0%)' : 'grayscale(50%)'
+                  scale: activeIndex === idx ? 1.1 : 0.9,
+                  opacity: activeIndex === idx ? 1 : 0.45,
+                  filter: activeIndex === idx ? 'grayscale(0%)' : 'grayscale(30%)',
+                  z: activeIndex === idx ? 20 : 0
                 }}
-                transition={{ duration: 0.5 }}
+                transition={{ duration: 0.35, ease: "easeOut" }}
                 style={{ 
                   flex: '0 0 auto', 
-                  width: 'clamp(220px, 35vw, 380px)', 
+                  width: 'clamp(240px, 30vw, 360px)', 
                   scrollSnapAlign: 'center',
-                  cursor: 'pointer'
+                  cursor: 'pointer',
+                  willChange: 'transform, opacity',
+                  position: 'relative'
                 }}
               >
                 <Link
                   to={`/category/${cat.slug}`}
-                  style={{ display: 'block', position: 'relative', overflow: 'hidden', aspectRatio: '3/4', borderRadius: 8, boxShadow: activeId === cat.id ? '0 20px 40px rgba(0,0,0,0.3)' : '0 10px 20px rgba(0,0,0,0.1)' }}
+                  style={{ 
+                    display: 'block', 
+                    position: 'relative', 
+                    overflow: 'hidden', 
+                    aspectRatio: '3/4', 
+                    borderRadius: 12, 
+                    boxShadow: activeIndex === idx ? '0 20px 40px rgba(0,0,0,0.3)' : '0 10px 20px rgba(0,0,0,0.1)',
+                    transition: 'box-shadow 0.4s ease'
+                  }}
                   aria-label={`Shop ${cat.name}`}
                 >
                   <img
@@ -266,7 +286,15 @@ const HomePage = () => {
                     onMouseLeave={e => e.currentTarget.style.transform = 'scale(1)'}
                     loading="lazy"
                   />
-                  <div style={{ position: 'absolute', inset: 0, background: activeId === cat.id ? 'linear-gradient(to top, rgba(0,0,0,0.8) 0%, transparent 60%)' : 'rgba(0,0,0,0.2)', display: 'flex', alignItems: 'flex-end', padding: 32, transition: '0.5s' }}>
+                  <div style={{ 
+                    position: 'absolute', 
+                    inset: 0, 
+                    background: activeIndex === idx ? 'linear-gradient(to top, rgba(0,0,0,0.8) 0%, transparent 60%)' : 'rgba(0,0,0,0.2)', 
+                    display: 'flex', 
+                    alignItems: 'flex-end', 
+                    padding: 32, 
+                    transition: 'background 0.4s ease' 
+                  }}>
                     <div style={{ color: '#fff' }}>
                       <p style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.2em', textTransform: 'uppercase', opacity: 0.7, marginBottom: 8 }}>Collection</p>
                       <h3 style={{ fontFamily: 'Outfit,sans-serif', fontWeight: 900, fontSize: 'clamp(24px, 3vw, 32px)', textTransform: 'uppercase', letterSpacing: '-0.02em' }}>{cat.name}</h3>
