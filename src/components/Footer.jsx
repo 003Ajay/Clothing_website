@@ -32,12 +32,31 @@ const Footer = () => {
   };
 
   return (
-    <footer style={{ background: '#111', color: '#fff', padding: '64px 0 0' }}>
+    <footer style={{ background: '#111', color: '#fff', padding: '64px 0 0', width: '100%', overflow: 'hidden' }}>
+      <style>{`
+        @media (max-width: 1024px) {
+          .footer-grid { 
+            grid-template-columns: 1fr 1fr !important;
+            gap: 40px !important;
+          }
+        }
+        @media (max-width: 600px) {
+          .footer-grid { 
+            grid-template-columns: 1fr !important;
+            gap: 32px !important;
+          }
+          .footer-bottom {
+            flex-direction: column !important;
+            align-items: flex-start !important;
+            text-align: left !important;
+          }
+        }
+      `}</style>
       <div style={{ maxWidth: 1440, margin: '0 auto', padding: '0 24px' }}>
         {/* Top: Brand + Links */}
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr repeat(4, auto)', gap: 48, paddingBottom: 48, borderBottom: '1px solid rgba(255,255,255,0.1)' }}>
+        <div className="footer-grid" style={{ display: 'grid', gridTemplateColumns: '1.5fr repeat(4, 1fr)', gap: 48, paddingBottom: 48, borderBottom: '1px solid rgba(255,255,255,0.1)' }}>
           {/* Brand */}
-          <div>
+          <div style={{ paddingBottom: 24 }}>
             <Link to="/" style={{ fontFamily: 'Outfit,sans-serif', fontWeight: 900, fontSize: 22, letterSpacing: '-0.05em', display: 'block', marginBottom: 16 }}>
               PORTER <span style={{ color: '#6b7280' }}>&</span> BOAT
             </Link>
@@ -75,7 +94,7 @@ const Footer = () => {
         </div>
 
         {/* Bottom */}
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '24px 0', flexWrap: 'wrap', gap: 16 }}>
+        <div className="footer-bottom" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '24px 0', flexWrap: 'wrap', gap: 16 }}>
           <p style={{ fontSize: 12, color: '#6b7280' }}>
             © {year} Porter & Boat. All rights reserved.
           </p>

@@ -80,19 +80,19 @@ const ProductDetailPage = () => {
       <nav 
         aria-label="breadcrumb" 
         className="breadcrumb-nav"
-        style={{ maxWidth: 1440, margin: '0 auto', padding: '20px 24px', display: 'flex', gap: 8, fontSize: 11, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.08em', color: '#9ca3af' }}
+        style={{ maxWidth: 1440, margin: '0 auto', padding: '16px 24px', display: 'flex', alignItems: 'center', gap: 8, fontSize: 10, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.08em', color: '#9ca3af', width: '100%', overflow: 'hidden' }}
       >
         <Link to="/" style={{ color: '#9ca3af', whiteSpace: 'nowrap' }}>Home</Link>
         <span>/</span>
         <Link to={`/category/${product.category}-tshirts`} style={{ color: '#9ca3af', whiteSpace: 'nowrap' }}>Collection</Link>
         <span>/</span>
-        <span style={{ color: '#111', display: '-webkit-box', WebkitLineClamp: 1, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>{product.name}</span>
+        <span style={{ color: '#111', flex: 1, minWidth: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{product.name}</span>
       </nav>
 
       {/* Product Layout */}
       <div 
         className="pdp-grid"
-        style={{ maxWidth: 1440, margin: '0 auto', padding: '0 24px 80px', display: 'grid', gridTemplateColumns: '0.9fr 1.1fr', gap: 64, alignItems: 'start' }}
+        style={{ maxWidth: 1440, margin: '0 auto', padding: '0 24px 80px', display: 'grid', gridTemplateColumns: '0.9fr 1.1fr', gap: 64, alignItems: 'start', width: '100%', overflowX: 'hidden' }}
       >
 
         {/* ─ Left: Gallery ─ */}
