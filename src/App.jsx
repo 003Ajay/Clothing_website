@@ -2,6 +2,7 @@ import React from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
 import { CartProvider } from './context/CartContext';
 import { AdminProvider, useAdmin } from './context/AdminContext';
+import { UserProvider, useUser } from './context/UserContext';
 
 // Storefront
 import Navbar from './components/Navbar';
@@ -13,6 +14,7 @@ import ProductDetailPage from './pages/ProductDetailPage';
 import CheckoutPage from './pages/CheckoutPage';
 import OrderSuccessPage from './pages/OrderSuccessPage';
 import WishlistPage from './pages/WishlistPage';
+import LoginPage from './pages/LoginPage';
 
 // Admin
 import AdminLoginPage from './pages/admin/AdminLoginPage';
@@ -21,10 +23,16 @@ import AdminProducts from './pages/admin/AdminProducts';
 import AdminCategories from './pages/admin/AdminCategories';
 import AdminOrders from './pages/admin/AdminOrders';
 
-// Protect admin routes
 const AdminRoute = ({ children }) => {
   const { isAuthenticated } = useAdmin();
   return isAuthenticated ? children : <Navigate to="/admin/login" replace />;
+};
+
+// Protect user routes
+const UserRoute = ({ children }) => {
+  const { isAuthenticated } = useUser();
+  const location = useLocation();
+  return isAuthenticated ? children : <Navigate to="/login" state={{ from: location }} replace />;
 };
 
 const StoreFront = () => (
@@ -39,6 +47,7 @@ const StoreFront = () => (
       <Route path="/checkout" element={<CheckoutPage />} />
       <Route path="/order-success" element={<OrderSuccessPage />} />
       <Route path="/wishlist" element={<WishlistPage />} />
+      <Route path="/login" element={<LoginPage />} />
     </Routes>
     <Footer />
   </>
@@ -49,21 +58,23 @@ import { WishlistProvider } from './context/WishlistContext';
 function App() {
   return (
     <AdminProvider>
-      <WishlistProvider>
-        <CartProvider>
-          <Routes>
-            {/* Admin Routes */}
-            <Route path="/admin/login" element={<AdminLoginPage />} />
-            <Route path="/admin" element={<AdminRoute><AdminDashboard /></AdminRoute>} />
-            <Route path="/admin/products" element={<AdminRoute><AdminProducts /></AdminRoute>} />
-            <Route path="/admin/categories" element={<AdminRoute><AdminCategories /></AdminRoute>} />
-            <Route path="/admin/orders" element={<AdminRoute><AdminOrders /></AdminRoute>} />
+      <UserProvider>
+        <WishlistProvider>
+          <CartProvider>
+            <Routes>
+              {/* Admin Routes */}
+              <Route path="/admin/login" element={<AdminLoginPage />} />
+              <Route path="/admin" element={<AdminRoute><AdminDashboard /></AdminRoute>} />
+              <Route path="/admin/products" element={<AdminRoute><AdminProducts /></AdminRoute>} />
+              <Route path="/admin/categories" element={<AdminRoute><AdminCategories /></AdminRoute>} />
+              <Route path="/admin/orders" element={<AdminRoute><AdminOrders /></AdminRoute>} />
 
-            {/* Storefront Routes */}
-            <Route path="/*" element={<StoreFront />} />
-          </Routes>
-        </CartProvider>
-      </WishlistProvider>
+              {/* Storefront Routes */}
+              <Route path="/*" element={<StoreFront />} />
+            </Routes>
+          </CartProvider>
+        </WishlistProvider>
+      </UserProvider>
     </AdminProvider>
   );
 }

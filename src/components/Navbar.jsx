@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useCart } from '../context/CartContext';
 import { useWishlist } from '../context/WishlistContext';
 import { useAdmin } from '../context/AdminContext';
+import { useUser } from '../context/UserContext';
 
 const Navbar = () => {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -15,6 +16,7 @@ const Navbar = () => {
   const { cartCount, setIsCartOpen } = useCart();
   const { wishlist } = useWishlist();
   const { categories } = useAdmin();
+  const { user, isAuthenticated, logout } = useUser();
   const location = useLocation();
   const navigate = useNavigate();
   const searchInputRef = useRef(null);
@@ -45,20 +47,20 @@ const Navbar = () => {
 
   const exploreMenu = {
     womensGuides: {
-      title: 'Womens Guides',
-      items: ['Leggings Guide', 'Leggings Size Guide | Find Your Fit', 'Sports Bra Guide', 'Running Guide', 'New To Gymshark?']
+      title: 'Style Guides',
+      items: ['Leggings Guide', 'Find Your Fit', 'Seasonal Trends', 'Community Favorites']
     },
     womensClothing: {
-      title: 'Womens Clothing',
-      items: ['Best Sellers', 'Top Rated', 'Black Staples', 'High Waisted', 'Sports Bras']
+      title: 'Womens',
+      items: ['Best Sellers', 'New Arrivals', 'Essentials', 'Activewear', 'Loungewear']
     },
     mensClothing: {
-      title: 'Mens Clothing',
-      items: ['Best Sellers', 'Top Rated', 'Black Staples', 'T-Shirts & Tops', 'Shorts']
+      title: 'Mens',
+      items: ['Best Sellers', 'New Arrivals', 'Oversized Series', 'Gym Wear', 'Essentials']
     },
     findOutMore: {
-      title: 'Find Out More',
-      items: ['Your Edit', 'Gymshark Loyalty', 'Gymshark 66', 'Blog']
+      title: 'Community',
+      items: ['Your Edit', 'Member Rewards', 'P&B Collective', 'The Blog']
     }
   };
 
@@ -139,7 +141,8 @@ const Navbar = () => {
             <Link
               to="/"
               style={{
-                fontFamily: 'Inter, sans-serif', fontWeight: 900, fontSize: 'clamp(20px, 4vw, 22px)',
+                fontFamily: 'Inter, sans-serif', fontWeight: 900, 
+                fontSize: 'clamp(1.125rem, 4vw, 1.375rem)',
                 letterSpacing: '-0.03em', textTransform: 'uppercase', color: '#000', whiteSpace: 'nowrap', textDecoration: 'none'
               }}
             >
@@ -172,7 +175,17 @@ const Navbar = () => {
                 </span>
               )}
             </Link>
-            <button className="icon-hide-mobile" style={{ padding: 8, cursor: 'pointer', color: '#000', background: 'none', border: 'none' }} aria-label="Account"><User size={22} strokeWidth={1.5} /></button>
+            <Link
+              to="/login"
+              className="icon-hide-mobile"
+              style={{ padding: 8, cursor: 'pointer', color: '#000', textDecoration: 'none', display: 'flex', alignItems: 'center', gap: 6 }}
+              aria-label="Account"
+            >
+              <User size={22} strokeWidth={1.5} />
+              {isAuthenticated && (
+                <span style={{ fontSize: '0.6875rem', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.05em' }}>{user.name.split(' ')[0]}</span>
+              )}
+            </Link>
             <button
               onClick={() => setIsCartOpen(true)}
               style={{ padding: 8, cursor: 'pointer', color: '#000', position: 'relative', background: 'none', border: 'none' }}
@@ -324,9 +337,20 @@ const Navbar = () => {
                 <Link to="/wishlist" style={{ display: 'flex', alignItems: 'center', gap: 12, fontSize: 16, fontWeight: 600, color: '#333', textDecoration: 'none' }}>
                   <Heart size={20} /> Wishlist ({wishlist.length})
                 </Link>
-                <button style={{ display: 'flex', alignItems: 'center', gap: 12, fontSize: 16, fontWeight: 600, color: '#333', background: 'none', border: 'none', padding: 0 }}>
-                  <User size={20} /> Account
-                </button>
+                <Link
+                  to="/login"
+                  style={{ display: 'flex', alignItems: 'center', gap: 12, fontSize: 16, fontWeight: 600, color: '#333', textDecoration: 'none' }}
+                >
+                  <User size={20} /> {isAuthenticated ? `Profile (${user.name})` : 'Account'}
+                </Link>
+                {isAuthenticated && (
+                  <button
+                    onClick={logout}
+                    style={{ textAlign: 'left', fontSize: 14, fontWeight: 600, color: '#888', background: 'none', border: 'none', padding: 0 }}
+                  >
+                    Sign Out
+                  </button>
+                )}
               </div>
             </motion.div>
           )}

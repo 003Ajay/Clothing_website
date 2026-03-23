@@ -12,17 +12,31 @@
   --color-gray-600: #444444;
   --color-gray-900: #121212;
 
-  --spacing-xs: 4px;
-  --spacing-sm: 8px;
-  --spacing-md: 16px;
-  --spacing-lg: 24px;
-  --spacing-xl: 48px;
+  --spacing-xs: 0.25rem; /* 4px */
+  --spacing-sm: 0.5rem;  /* 8px */
+  --spacing-md: 1rem;   /* 16px */
+  --spacing-lg: 1.5rem; /* 24px */
+  --spacing-xl: 3rem;   /* 48px */
+  --spacing-2xl: 4rem;  /* 64px */
 
   --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  --radius-sm: 4px;
-  --radius-md: 8px;
-  --radius-lg: 12px;
-  --radius-full: 999px;
+  --radius-sm: 0.25rem;
+  --radius-md: 0.5rem;
+  --radius-lg: 0.75rem;
+  --radius-xl: 1rem;
+  --radius-full: 9999px;
+
+  /* Responsive font sizes */
+  --text-xs: 0.75rem;
+  --text-sm: 0.875rem;
+  --text-base: 1rem;
+  --text-lg: 1.125rem;
+  --text-xl: 1.25rem;
+  --text-2xl: 1.5rem;
+  --text-3xl: 1.875rem;
+  --text-4xl: 2.25rem;
+  --text-5xl: 3rem;
+  --text-6xl: 3.75rem;
 }
 
 * {
@@ -85,16 +99,45 @@ button {
 }
 
 .container {
+  width: 100%;
   max-width: 1440px;
-  margin: 0 auto;
-  padding: 0 24px;
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: var(--spacing-md);
+  padding-right: var(--spacing-md);
 }
 
-/* Grid System */
+@media (min-width: 768px) {
+  .container {
+    padding-left: var(--spacing-lg);
+    padding-right: var(--spacing-lg);
+  }
+}
+
+/* Responsive Grid System */
 .grid-ecommerce {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-  gap: 16px;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--spacing-md);
+}
+
+@media (min-width: 640px) {
+  .grid-ecommerce {
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--spacing-lg);
+  }
+}
+
+@media (min-width: 1024px) {
+  .grid-ecommerce {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (min-width: 1280px) {
+  .grid-ecommerce {
+    grid-template-columns: repeat(4, 1fr);
+  }
 }
 
 /* Utility Classes */
@@ -325,16 +368,16 @@ button {
 
 @media (max-width: 1024px) {
   .text-6xl {
-    font-size: 40px;
+    font-size: 2.5rem;
   }
 
   .text-4xl {
-    font-size: 28px;
+    font-size: 1.75rem;
   }
 
   .py-16 {
-    padding-top: 40px;
-    padding-bottom: 40px;
+    padding-top: 2.5rem;
+    padding-bottom: 2.5rem;
   }
 }
 
@@ -353,11 +396,6 @@ button {
 
   .lg-grid {
     display: grid !important;
-  }
-
-  .grid-ecommerce {
-    grid-template-columns: repeat(4, 1fr) !important;
-    gap: 32px;
   }
 }
 

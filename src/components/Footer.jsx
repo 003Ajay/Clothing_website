@@ -37,42 +37,43 @@ const Footer = () => {
         @media (max-width: 1024px) {
           .footer-grid { 
             grid-template-columns: 1fr 1fr !important;
-            gap: 40px !important;
+            gap: 2.5rem !important;
           }
         }
-        @media (max-width: 600px) {
-          footer {
-            padding: 40px 0 !important;
-          }
+        @media (max-width: 640px) {
           .footer-grid { 
-            display: none !important;
+            grid-template-columns: 1fr !important;
+            gap: 2rem !important;
+            text-align: center !important;
+          }
+          .footer-brand {
+             display: flex !important;
+             flex-direction: column !important;
+             align-items: center !important;
           }
           .footer-bottom {
             flex-direction: column !important;
             align-items: center !important;
             text-align: center !important;
-            gap: 20px !important;
-          }
-          .mobile-footer-logo {
-            display: block !important;
+            gap: 1.5rem !important;
           }
         }
       `}</style>
       <div style={{ maxWidth: 1440, margin: '0 auto', padding: '0 24px' }}>
         {/* Top: Brand + Links */}
-        <div className="footer-grid" style={{ display: 'grid', gridTemplateColumns: '1.5fr repeat(4, 1fr)', gap: 48, paddingBottom: 48, borderBottom: '1px solid rgba(255,255,255,0.1)' }}>
+        <div className="footer-grid" style={{ display: 'grid', gridTemplateColumns: '1.5fr repeat(4, 1fr)', gap: '3rem', paddingBottom: '3rem', borderBottom: '1px solid rgba(255,255,255,0.1)' }}>
           {/* Brand */}
-          <div style={{ paddingBottom: 24 }}>
-            <Link to="/" style={{ fontFamily: 'Outfit,sans-serif', fontWeight: 900, fontSize: 22, letterSpacing: '-0.05em', display: 'block', marginBottom: 16 }}>
+          <div className="footer-brand" style={{ paddingBottom: '1.5rem' }}>
+            <Link to="/" style={{ fontFamily: 'Outfit,sans-serif', fontWeight: 900, fontSize: '1.375rem', letterSpacing: '-0.05em', display: 'block', marginBottom: '1rem' }}>
               PORTER <span style={{ color: '#6b7280' }}>&</span> BOAT
             </Link>
-            <p style={{ fontSize: 13, color: '#9ca3af', lineHeight: 1.7, maxWidth: 260, marginBottom: 24 }}>
+            <p style={{ fontSize: '0.8125rem', color: '#9ca3af', lineHeight: 1.7, maxWidth: 260, marginBottom: '1.5rem' }}>
               Premium men's clothing designed for the modern lifestyle. Gym. Travel. Street.
             </p>
             {/* Trust Badges */}
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
               {['🔒 Secure Payment', '↩ Easy Returns', '🚚 Free Shipping ₹999+', '🏆 Premium Quality'].map(b => (
-                <span key={b} style={{ fontSize: 12, color: '#9ca3af', fontWeight: 600, letterSpacing: '0.05em' }}>{b}</span>
+                <span key={b} style={{ fontSize: '0.75rem', color: '#9ca3af', fontWeight: 600, letterSpacing: '0.05em' }}>{b}</span>
               ))}
             </div>
           </div>

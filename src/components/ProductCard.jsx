@@ -66,22 +66,22 @@ const ProductCard = ({ product }) => {
       </div>
 
       {/* Info */}
-      <div style={{ padding: '0 2px', display: 'flex', flexDirection: 'column', flex: 1 }}>
+      <div style={{ padding: '0 0.125rem', display: 'flex', flexDirection: 'column', flex: 1 }}>
         <Link to={`/product/${product.slug}`} style={{ textDecoration: 'none' }}>
           <h3 style={{
-            fontFamily: 'Outfit, sans-serif', fontWeight: 600, fontSize: 12,
+            fontFamily: 'Outfit, sans-serif', fontWeight: 600, fontSize: '0.75rem',
             textTransform: 'none', letterSpacing: '0.01em', lineHeight: 1.4,
-            color: '#000', marginBottom: 4,
+            color: '#000', marginBottom: '0.25rem',
             display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical',
-            overflow: 'hidden', height: '2.8em' // Fixed height for 2 lines
+            overflow: 'hidden', height: '2.8rem' 
           }}>
             {product.name}
           </h3>
         </Link>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 8 }}>
-          <span style={{ fontWeight: 700, fontSize: 13 }}>₹{product.price.toLocaleString('en-IN')}</span>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.375rem', marginBottom: '0.5rem' }}>
+          <span style={{ fontWeight: 700, fontSize: '0.8125rem' }}>₹{product.price.toLocaleString('en-IN')}</span>
           {product.oldPrice && (
-            <span style={{ fontSize: 11, color: '#999', textDecoration: 'line-through' }}>
+            <span style={{ fontSize: '0.6875rem', color: '#999', textDecoration: 'line-through' }}>
               ₹{product.oldPrice.toLocaleString('en-IN')}
             </span>
           )}
@@ -91,24 +91,24 @@ const ProductCard = ({ product }) => {
           onClick={() => addToCart(product, 1, 'L')}
           style={{
             width: '100%',
-            padding: '8px 0',
+            padding: '0.75rem 0',
             background: '#000',
             color: '#fff',
-            fontSize: 11,
+            fontSize: '0.6875rem',
             fontWeight: 800,
             textTransform: 'uppercase',
             letterSpacing: '0.1em',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            gap: 8,
+            gap: '0.5rem',
             cursor: 'pointer',
             border: 'none',
             transition: 'background 0.2s',
-            marginTop: 'auto' // Pushes button to bottom
+            marginTop: 'auto',
+            borderRadius: '0.25rem'
           }}
-          onMouseEnter={e => e.currentTarget.style.background = '#333'}
-          onMouseLeave={e => e.currentTarget.style.background = '#000'}
+          className="gs-add-btn"
         >
           <ShoppingBag size={14} /> Add To Cart
         </button>

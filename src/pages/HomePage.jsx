@@ -27,31 +27,30 @@ const HomePage = () => {
     return [...categories, ...categories, ...categories];
   }, [categories]);
 
-  // Observer to find the center item
-  React.useEffect(() => {
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach(entry => {
-          if (entry.isIntersecting && entry.intersectionRatio >= 0.5) {
-            setActiveIndex(parseInt(entry.target.dataset.index, 10));
-          }
-        });
-      },
-      {
-        root: scrollRef.current,
-        threshold: 0.6,
-        rootMargin: '0px -10% 0px -10%'
+  // Detect active index based on center position
+  const updateActiveIndex = React.useCallback(() => {
+    if (!scrollRef.current || categories.length === 0) return;
+    const parent = scrollRef.current;
+    const items = parent.querySelectorAll('.grid-scroll');
+    const containerCenter = parent.scrollLeft + (parent.offsetWidth / 2);
+
+    let closestIndex = 0;
+    let minDistance = Infinity;
+
+    items.forEach((item, idx) => {
+      const itemCenter = item.offsetLeft + (item.offsetWidth / 2);
+      const distance = Math.abs(containerCenter - itemCenter);
+      if (distance < minDistance) {
+        minDistance = distance;
+        closestIndex = idx;
       }
-    );
+    });
 
-    const items = scrollRef.current?.querySelectorAll('.grid-scroll');
-    items?.forEach(item => observer.observe(item));
+    setActiveIndex(closestIndex);
+  }, [categories]);
 
-    return () => observer.disconnect();
-  }, [displayCategories]);
-
-  // Teleport to middle on mount
-  React.useEffect(() => {
+  // Teleport to middle on mount and resize
+  const centerMiddleSet = React.useCallback(() => {
     if (scrollRef.current && categories.length > 0) {
       const parent = scrollRef.current;
       const items = parent.querySelectorAll('.grid-scroll');
@@ -65,11 +64,23 @@ const HomePage = () => {
     }
   }, [categories]);
 
+  React.useEffect(() => {
+    const timer = setTimeout(centerMiddleSet, 100);
+    window.addEventListener('resize', centerMiddleSet);
+    return () => {
+      clearTimeout(timer);
+      window.removeEventListener('resize', centerMiddleSet);
+    };
+  }, [centerMiddleSet]);
+
   // Silent teleport on scroll
   const handleScroll = () => {
     if (!scrollRef.current || categories.length === 0) return;
     const parent = scrollRef.current;
     const { scrollLeft, scrollWidth, offsetWidth } = parent;
+
+    // Update active index as we scroll
+    updateActiveIndex();
 
     const items = parent.querySelectorAll('.grid-scroll');
     if (items.length < categories.length * 2) return;
@@ -107,9 +118,8 @@ const HomePage = () => {
       });
 
       const targetIndex = direction === 'left' ? closestIndex - 1 : closestIndex + 1;
-      const targetItem = items[targetIndex];
-
-      if (targetItem) {
+      if (targetIndex >= 0 && targetIndex < items.length) {
+        const targetItem = items[targetIndex];
         const targetScrollLeft = targetItem.offsetLeft - containerCenter + (targetItem.offsetWidth / 2);
         parent.scrollTo({ left: targetScrollLeft, behavior: 'smooth' });
       }
@@ -170,7 +180,7 @@ const HomePage = () => {
               className="gs-btn gs-btn-outline"
               style={{ borderColor: '#fff', color: '#fff', padding: '16px 48px', fontSize: 14 }}
             >
-              View Blueprint
+              View Collection
             </Link>
           </div>
         </motion.div>
@@ -242,8 +252,15 @@ const HomePage = () => {
             initial="hidden" whileInView="visible" viewport={{ once: true }}
             variants={stagger}
             style={{
-              display: 'flex', gap: 20, overflowX: 'auto', scrollSnapType: 'x mandatory',
-              padding: '60px 0', scrollbarWidth: 'none', msOverflowStyle: 'none'
+              display: 'flex', 
+              gap: 20, 
+              overflowX: 'auto', 
+              scrollSnapType: 'x mandatory',
+              padding: '60px 0', 
+              scrollbarWidth: 'none', 
+              msOverflowStyle: 'none',
+              scrollPadding: '0 25%', // Helps snapping to center
+              position: 'relative'
             }}
           >
             <style>{`.grid-scroll::-webkit-scrollbar { display: none; }`}</style>
@@ -301,7 +318,7 @@ const HomePage = () => {
                     transition: 'background 0.4s ease'
                   }}>
                     <div style={{ color: '#fff' }}>
-                      <p style={{ fontSize: 10, fontWeight: 900, letterSpacing: '0.1em', textTransform: 'uppercase', color: '#fff', marginBottom: 4 }}>Dynamics</p>
+                      <p style={{ fontSize: 10, fontWeight: 900, letterSpacing: '0.1em', textTransform: 'uppercase', color: '#fff', marginBottom: 4 }}>Signature</p>
                       <h3 style={{ fontFamily: 'Outfit,sans-serif', fontWeight: 900, fontSize: 'clamp(20px, 3vw, 28px)', textTransform: 'uppercase', letterSpacing: '-0.02em' }}>{cat.name}</h3>
                       <div style={{ height: 2, width: 40, background: '#fff', marginTop: 12 }} />
                     </div>
@@ -348,76 +365,93 @@ const HomePage = () => {
         </div>
       </section>
 
-      {/* ─── NEW: THE BENTO EDIT ───────── */}
-      <section style={{ padding: '80px 24px', maxWidth: 1440, margin: '0 auto' }}>
-        <div style={{ textAlign: 'center', marginBottom: 56 }}>
-          <p style={{ fontSize: 12, fontWeight: 900, color: '#333', textTransform: 'uppercase', letterSpacing: '0.2em', marginBottom: 12 }}>Lifestyle</p>
-          <h2 style={{ fontFamily: 'Outfit,sans-serif', fontWeight: 900, fontSize: 'clamp(32px, 5vw, 48px)', textTransform: 'uppercase', letterSpacing: '-0.02em' }}>The Performance Edit</h2>
+      {/* ─── THE BENTO EDIT ───────── */}
+      <section style={{ padding: '5rem 1.5rem', maxWidth: 1440, margin: '0 auto' }}>
+        <div style={{ textAlign: 'center', marginBottom: '3.5rem' }}>
+          <p style={{ fontSize: '0.75rem', fontWeight: 900, color: '#333', textTransform: 'uppercase', letterSpacing: '0.2rem', marginBottom: '0.75rem' }}>Lifestyle</p>
+          <h2 style={{ fontFamily: 'Outfit,sans-serif', fontWeight: 900, fontSize: 'clamp(2rem, 5vw, 3rem)', textTransform: 'uppercase', letterSpacing: '-0.02em' }}>The Performance Edit</h2>
         </div>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(12, 1fr)', gridTemplateRows: 'repeat(2, 400px)', gap: 20 }}>
-          {/* Large Main */}
-          <div style={{ gridColumn: 'span 8', gridRow: 'span 2', position: 'relative', overflow: 'hidden', borderRadius: 16 }}>
+        
+        {/* Responsive Grid System: 1 column on mobile, Bento on desktop */}
+        <div className="bento-grid" style={{ 
+          display: 'grid', 
+          gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', 
+          gap: '1.25rem' 
+        }}>
+          {/* Main Slot */}
+          <div style={{ position: 'relative', overflow: 'hidden', borderRadius: '1rem', height: '100%', minHeight: '30rem' }} className="bento-main">
             <img src="https://images.unsplash.com/photo-1517836357463-d25dfeac3438?q=80&w=2000" style={{ width: '100%', height: '100%', objectFit: 'cover' }} alt="Gym Session" />
-            <div style={{ position: 'absolute', bottom: 40, left: 40, color: '#fff' }}>
-              <h3 style={{ fontSize: 48, fontWeight: 900, textTransform: 'uppercase', marginBottom: 16 }}>Built For Intensity</h3>
+            <div style={{ position: 'absolute', bottom: '2.5rem', left: '2.5rem', color: '#fff' }}>
+              <h3 style={{ fontSize: 'clamp(2rem, 4vw, 3rem)', fontWeight: 900, textTransform: 'uppercase', marginBottom: '1rem' }}>Built For Intensity</h3>
               <Link to="/category/gym-wear" className="gs-btn" style={{ background: '#fff', color: '#000' }}>Core Collection</Link>
             </div>
           </div>
-          {/* Small Top Right */}
-          <div style={{ gridColumn: 'span 4', position: 'relative', overflow: 'hidden', borderRadius: 16, background: '#121212' }}>
-            <img src="https://images.unsplash.com/photo-1543076447-215ad9ba6923?q=80&w=1200" style={{ width: '100%', height: '100%', objectFit: 'cover', opacity: 0.6 }} alt="Oversized Fit" />
-            <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', textAlign: 'center', padding: 20 }}>
-              <h4 style={{ color: '#fff', fontSize: 24, fontWeight: 900, textTransform: 'uppercase' }}>Oversized Series<br />Available Now</h4>
+          
+          {/* Side Slots Container */}
+          <div style={{ display: 'grid', gap: '1.25rem' }} className="bento-side-container">
+            <div style={{ position: 'relative', overflow: 'hidden', borderRadius: '1rem', background: '#121212', minHeight: '15rem' }}>
+              <img src="https://images.unsplash.com/photo-1543076447-215ad9ba6923?q=80&w=1200" style={{ width: '100%', height: '100%', objectFit: 'cover', opacity: 0.6 }} alt="Oversized Fit" />
+              <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', textAlign: 'center', padding: '1.25rem' }}>
+                <h4 style={{ color: '#fff', fontSize: '1.5rem', fontWeight: 900, textTransform: 'uppercase' }}>Oversized Series<br />Available Now</h4>
+              </div>
             </div>
-          </div>
-          {/* Small Bottom Right */}
-          <div style={{ gridColumn: 'span 4', position: 'relative', overflow: 'hidden', borderRadius: 16, background: '#121212' }}>
-            <div style={{ position: 'absolute', inset: 0, padding: 40, display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
-              <p style={{ color: '#888', fontWeight: 900, fontSize: 12, textTransform: 'uppercase', marginBottom: 12 }}>Spec Highlight</p>
-              <h4 style={{ color: '#fff', fontSize: 28, fontWeight: 900, textTransform: 'uppercase', marginBottom: 20 }}>240 GSM HEAVYWEIGHT COTTON</h4>
-              <Link to="/category/oversized-tshirts" style={{ color: '#fff', fontWeight: 800, fontSize: 13, textDecoration: 'underline' }}>View Specs</Link>
+            
+            <div style={{ position: 'relative', overflow: 'hidden', borderRadius: '1rem', background: '#121212', minHeight: '15rem' }}>
+              <div style={{ position: 'absolute', inset: 0, padding: '2.5rem', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
+                <p style={{ color: '#888', fontWeight: 900, fontSize: '0.75rem', textTransform: 'uppercase', marginBottom: '0.75rem' }}>Spec Highlight</p>
+                <h4 style={{ color: '#fff', fontSize: '1.75rem', fontWeight: 900, textTransform: 'uppercase', marginBottom: '1.25rem' }}>240 GSM HEAVYWEIGHT COTTON</h4>
+                <Link to="/category/oversized-tshirts" style={{ color: '#fff', fontWeight: 800, fontSize: '0.8125rem', textDecoration: 'underline' }}>View Specs</Link>
+              </div>
             </div>
           </div>
         </div>
+
+        {/* Desktop styling to force Bento look */}
+        <style dangerouslySetInnerHTML={{ __html: `
+          @media (min-width: 1024px) {
+            .bento-grid {
+              grid-template-columns: repeat(12, 1fr) !important;
+              grid-template-rows: repeat(2, 400px) !important;
+            }
+            .bento-main {
+              grid-column: span 8 !important;
+              grid-row: span 2 !important;
+            }
+            .bento-side-container {
+              grid-column: span 4 !important;
+              display: contents !important;
+            }
+          }
+        `}} />
       </section>
 
-      {/* ─── NEW: BLUEPRINT DYNAMICS (Parallax Technical) ───────── */}
-      <section style={{ padding: '120px 24px', background: '#000', color: '#fff', overflow: 'hidden', position: 'relative' }}>
-        <div className="text-outline" style={{ position: 'absolute', top: '10%', left: '-5%', fontSize: 240, fontWeight: 900, opacity: 0.1, pointerEvents: 'none' }}>
-          TECHNICAL
-        </div>
+      <section style={{ padding: '120px 24px', background: '#fafafa', color: '#000', overflow: 'hidden', position: 'relative' }}>
         <div style={{ maxWidth: 1440, margin: '0 auto', display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: 80, alignItems: 'center', position: 'relative', zIndex: 1 }}>
-          <motion.div initial={{ opacity: 0, scale: 0.9 }} whileInView={{ opacity: 1, scale: 1 }} viewport={{ once: true }}>
-            <div style={{ position: 'relative', padding: 40, border: '1px solid #222', borderRadius: 24 }}>
-              <img src="https://images.unsplash.com/photo-1583743814966-8936f5b7be1a?q=80&w=800" style={{ width: '100%', filter: 'grayscale(100%) invert(100%)' }} alt="Tee Blueprint" />
-              <div style={{ position: 'absolute', top: '20%', right: -20, background: '#fff', color: '#000', padding: '8px 16px', borderRadius: 4, transform: 'rotate(5deg)' }}>
-                <p style={{ fontSize: 10, fontWeight: 900 }}>REINFORCED SEAMS</p>
-              </div>
-              <div style={{ position: 'absolute', bottom: '30%', left: -20, background: '#fff', color: '#000', padding: '8px 16px', borderRadius: 4, transform: 'rotate(-5deg)' }}>
-                <p style={{ fontSize: 10, fontWeight: 900 }}>240 GSM STRUCTURE</p>
-              </div>
+          <motion.div initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
+            <div style={{ position: 'relative', overflow: 'hidden', borderRadius: 24, boxShadow: '0 40px 100px rgba(0,0,0,0.05)' }}>
+              <img src="https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?q=80&w=1200" style={{ width: '100%', display:'block' }} alt="Signature Tee" />
             </div>
           </motion.div>
           <div>
-            <p style={{ fontSize: 12, fontWeight: 900, color: '#888', textTransform: 'uppercase', letterSpacing: '0.2em', marginBottom: 24 }}>The Technical Series</p>
-            <h2 style={{ fontFamily: 'Outfit,sans-serif', fontWeight: 900, fontSize: 'clamp(40px, 6vw, 72px)', lineHeight: 0.9, textTransform: 'uppercase', letterSpacing: '-0.04em', marginBottom: 32 }}>
-              ENGINEERED<br />BEYOND THE<br />SURFACE
+            <p style={{ fontSize: 11, fontWeight: 900, color: '#999', textTransform: 'uppercase', letterSpacing: '0.3em', marginBottom: 24 }}>The Signature Series</p>
+            <h2 style={{ fontFamily: 'Outfit,sans-serif', fontWeight: 900, fontSize: 'clamp(36px, 6vw, 64px)', lineHeight: 1, textTransform: 'uppercase', letterSpacing: '-0.02em', marginBottom: 32 }}>
+              CRAFTED FOR<br />THE MODERN<br />SILHOUETTE
             </h2>
-            <p style={{ fontSize: 16, lineHeight: 1.8, color: '#888', marginBottom: 48, maxWidth: 500 }}>
-              We don't just "design" clothes—we engineer them. Every stitch in the Blueprint collection is optimized for maximum tensile strength and superior mobility. This is where high-energy performance meets street aesthetics.
+            <p style={{ fontSize: 16, lineHeight: 1.8, color: '#666', marginBottom: 48, maxWidth: 500 }}>
+              We believe in the purity of form and the integrity of materials. Our Signature collection is the result of meticulous craft, balancing structured 240 GSM cotton with an effortless, contemporary fit.
             </p>
             <div style={{ display: 'flex', gap: 40 }}>
               <div>
-                <p style={{ fontSize: 32, fontWeight: 900, color: '#fff' }}>100%</p>
-                <p style={{ fontSize: 10, fontWeight: 900, color: '#555', textTransform: 'uppercase' }}>Combed Cotton</p>
+                <p style={{ fontSize: 32, fontWeight: 900, color: '#000' }}>100%</p>
+                <p style={{ fontSize: 10, fontWeight: 900, color: '#999', textTransform: 'uppercase' }}>Combed Cotton</p>
               </div>
               <div>
-                <p style={{ fontSize: 32, fontWeight: 900, color: '#fff' }}>240+</p>
-                <p style={{ fontSize: 10, fontWeight: 900, color: '#555', textTransform: 'uppercase' }}>GSM Density</p>
+                <p style={{ fontSize: 32, fontWeight: 900, color: '#000' }}>240+</p>
+                <p style={{ fontSize: 10, fontWeight: 900, color: '#999', textTransform: 'uppercase' }}>GSM Weight</p>
               </div>
               <div>
-                <p style={{ fontSize: 32, fontWeight: 900, color: '#fff' }}>ZERO</p>
-                <p style={{ fontSize: 10, fontWeight: 900, color: '#555', textTransform: 'uppercase' }}>Shrinkage Tech</p>
+                <p style={{ fontSize: 32, fontWeight: 900, color: '#000' }}>ZERO</p>
+                <p style={{ fontSize: 10, fontWeight: 900, color: '#999', textTransform: 'uppercase' }}>Shrinkage Proof</p>
               </div>
             </div>
           </div>
@@ -434,7 +468,7 @@ const HomePage = () => {
           <div style={{ display: 'flex', gap: 0, flexWrap: 'wrap', justifyContent: 'center', background: 'rgba(255,255,255,0.05)', padding: 8, borderRadius: 16, backdropFilter: 'blur(10px)', border: '1px solid rgba(255,255,255,0.1)' }}>
             <input
               type="email"
-              placeholder="CONFIG@COMMUNITY.FIT"
+              placeholder="MEMBERS@PORTERBOAT.COM"
               style={{ padding: '16px 24px', background: 'transparent', border: 'none', color: '#fff', fontSize: 14, minWidth: 300, outline: 'none', fontWeight: 800 }}
             />
             <button className="gs-btn" style={{ borderRadius: 12, background: '#fff', color: '#000' }}>Join Now</button>
