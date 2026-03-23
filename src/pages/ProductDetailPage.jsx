@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { ShoppingBag, Zap, ChevronLeft, ChevronRight, Star, Heart, Share2, Ruler, MessageSquare } from 'lucide-react';
+import { ShoppingBag, Zap, ChevronLeft, ChevronRight, Star, Heart, Share2, Ruler, MessageSquare, ArrowLeft, Search } from 'lucide-react';
 import { useAdmin } from '../context/AdminContext';
 import { useCart } from '../context/CartContext';
+import { useWishlist } from '../context/WishlistContext';
 import ProductCard from '../components/ProductCard';
 
 const RESPONSIVE_CSS = `
@@ -106,32 +107,22 @@ const ProductDetailPage = () => {
     <main style={{ background: '#fff', minHeight: '100vh', paddingTop: 0, overflowX: 'hidden' }}>
       <style>{RESPONSIVE_CSS}</style>
       
-      {/* 1. Promo Bar (Pinned below fixed Navbar for visibility) */}
-      <div style={{ 
-        marginTop: 70,
-        background: '#f5f5f5', 
-        color: '#000', 
-        padding: '12px 16px', 
-        textAlign: 'center', 
-        fontSize: 12, 
-        fontWeight: 700, 
-        textTransform: 'uppercase', 
-        letterSpacing: '0.05em', 
-        display: 'flex', 
-        alignItems: 'center', 
-        justifyContent: 'center', 
-        gap: 12, 
-        borderBottom: '1px solid #eee',
-        width: '100%',
-        boxSizing: 'border-box'
-      }}>
-        15% Student Discount 🎓
-        <div style={{ width: 16, height: 16, display: 'flex', alignItems: 'center', justifyContent: 'center', border: '1.5px solid #000', borderRadius: '50%', cursor: 'pointer' }}>
-          <div style={{ width: 4, height: 4, background: '#000', borderRadius: '1px' }} />
+      {/* 1. Mobile Header (Back | Logo | Icons) */}
+      <header className="catalog-header lg-hidden" style={{ top: 0, position: 'fixed' }}>
+        <button onClick={() => navigate(-1)} style={{ background:'none', border:'none', padding:0, cursor:'pointer' }}>
+          <ArrowLeft size={22} />
+        </button>
+        <div style={{ flex:1, display:'flex', justifyContent:'center' }}>
+          <img src="/logo.svg" alt="Porter & Boat" style={{ height: 28 }} />
         </div>
-      </div>
+        <div style={{ display:'flex', gap: 16, alignItems:'center' }}>
+          <Search size={22} />
+          <Heart size={22} />
+          <ShoppingBag size={22} onClick={() => setIsCartOpen(true)} />
+        </div>
+      </header>
 
-      <div style={{ paddingBottom: 80 }}>
+      <div style={{ paddingTop: 56, paddingBottom: 100 }}>
         {/* Product Layout Grid */}
         <div className="pdp-grid" style={{ maxWidth: 1200, margin: '0 auto', display: 'grid', gridTemplateColumns: 'minmax(0, 1.3fr) 0.7fr', alignItems: 'start', width: '100%' }}>
           
@@ -147,22 +138,29 @@ const ProductDetailPage = () => {
                 style={{ width: '100%', height: '100%', objectFit: 'cover', filter: activeVariant.filter }}
               />
               
-              {/* Carousel Indicators (Dots) */}
-              <div className="pdp-carousel-dots" style={{ position: 'absolute', bottom: 20, left: '50%', transform: 'translateX(-50%)', display: 'flex', gap: 10 }}>
-                {images.map((_, i) => (
-                  <button 
+              <div className="pdp-carousel-dots" style={{ position: 'absolute', bottom: 20, left: '50%', transform: 'translateX(-50%)', display: 'flex', gap: 8 }}>
+                {images.slice(0, 5).map((_, i) => (
+                  <div 
                     key={i} 
-                    onClick={() => setActiveImg(i)}
                     style={{ 
-                      width: activeImg === i ? 24 : 6, 
+                      width: activeImg === i ? 20 : 6, 
                       height: 6, 
                       borderRadius: 3, 
-                      background: activeImg === i ? '#000' : 'rgba(0,0,0,0.15)', 
-                      transition: '0.4s cubic-bezier(0.4, 0, 0.2, 1)',
-                      padding: 0
+                      background: activeImg === i ? '#000' : 'rgba(0,0,0,0.2)', 
+                      transition: '0.3s'
                     }}
                   />
                 ))}
+              </div>
+
+              {/* Gauge Badge */}
+              <div style={{
+                position: 'absolute', bottom: 20, left: 20,
+                background: 'rgba(0,0,0,0.6)', color: '#fff', fontSize: 10,
+                fontWeight: 900, textTransform: 'uppercase', letterSpacing: '0.05em',
+                padding: '6px 10px', borderRadius: 2, backdropFilter: 'blur(4px)'
+              }}>
+                Premium Heavy Gauge Fabric
               </div>
 
               {/* Arrow Nav (Desktop) */}
@@ -196,19 +194,24 @@ const ProductDetailPage = () => {
               30% OFF | SAVE ₹1,200
             </div>
 
-            <h1 
-              className="pdp-title"
-              style={{ fontFamily: 'Outfit, sans-serif', fontSize: 'clamp(1.5rem, 5vw, 2rem)', fontWeight: 900, textTransform: 'uppercase', letterSpacing: '-0.02em', lineHeight: 1.1, marginBottom: '0.75rem' }}
-            >
-              {product.name}
-            </h1>
-
-            <div className="pdp-price-row" style={{ display: 'flex', alignItems: 'center', gap: '0.625rem', marginBottom: '2rem' }}>
-              <span style={{ fontSize: '1.25rem', fontWeight: 900 }}>₹{product.price.toLocaleString('en-IN')}</span>
-              {product.oldPrice && (
-                <span style={{ fontSize: '1.125rem', color: '#f43f5e', textDecoration: 'line-through', fontWeight: 800 }}>₹{product.oldPrice.toLocaleString('en-IN')}</span>
-              )}
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 4 }}>
+              <h1 
+                className="pdp-title"
+                style={{ fontFamily: 'Outfit, sans-serif', fontSize: '1.25rem', fontWeight: 800, textTransform: 'none', color: '#333', flex: 1 }}
+              >
+                {product.name}
+              </h1>
+              <button style={{ background: 'none', border:'none', display: 'flex', alignItems: 'center', gap: 4, fontWeight: 900, fontSize: 11, textTransform: 'uppercase', cursor: 'pointer' }}>
+                <Share2 size={16} /> Share
+              </button>
             </div>
+
+            <p style={{ fontSize: 13, color: '#999', marginBottom: 16 }}>{product.category?.replace('-', ' ')}</p>
+
+            <div className="pdp-price-row" style={{ marginBottom: 2 }}>
+              <span style={{ fontSize: '1.5rem', fontWeight: 900 }}>₹{product.price.toLocaleString('en-IN')}</span>
+            </div>
+            <p style={{ fontSize: 11, color: '#999', marginBottom: 24 }}>Price incl. of all taxes</p>
 
             {/* Interaction Row (Rating, Wishlist, Share) */}
             <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '2.5rem' }}>
@@ -252,35 +255,34 @@ const ProductDetailPage = () => {
             </div>
 
             {/* Size Selection */}
-            <div style={{ marginBottom: 40 }}>
-              <div className="pdp-size-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
-                <p style={{ fontSize: 13, fontWeight: 800 }}>Select a size</p>
-                <button style={{ fontSize: 12, fontWeight: 900, textDecoration: 'underline', display: 'flex', alignItems: 'center', gap: 4, cursor: 'pointer' }}>
-                  <Ruler size={14} /> Size Guide
-                </button>
+            <div style={{ marginBottom: 32 }}>
+              <div style={{ display:'flex', justifyContent:'space-between', marginBottom: 16 }}>
+                 <p style={{ fontSize: 13, fontWeight: 800 }}>Please select a size. <span style={{ color:'#000', textDecoration:'underline', marginLeft: 8, cursor:'pointer' }}>SIZE CHART</span></p>
               </div>
-              <div className="pdp-size-grid" style={{ display: 'flex', border: '1px solid #e5e7eb', borderRadius: 4, overflow: 'hidden' }}>
-                {SIZES.map(s => (
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 8 }}>
+                {['XXS', 'XS', 'S', 'M', 'L', 'XL', 'XXL', '3XL'].map(s => (
                   <button
                     key={s}
                     onClick={() => setSelectedSize(s)}
                     style={{
-                      flex: 1,
-                      padding: '16px 0',
-                      borderRight: '1px solid #e5e7eb',
-                      background: selectedSize === s ? '#f5f5f5' : '#fff',
+                      padding: '12px 0',
+                      border: `1.5px solid ${selectedSize === s ? '#000' : '#eee'}`,
+                      background: '#fff',
                       fontWeight: 800,
-                      fontSize: 13,
+                      fontSize: 12,
+                      borderRadius: 4,
                       cursor: 'pointer',
-                      transition: '0.2s',
-                      outline: selectedSize === s ? '1px solid #000' : 'none',
-                      zIndex: selectedSize === s ? 1 : 0
+                      color: s === 'XXS' ? '#ccc' : '#000',
+                      textDecoration: s === 'XXS' ? 'line-through' : 'none'
                     }}
                   >
                     {s}
                   </button>
                 ))}
               </div>
+              <p style={{ fontSize: 12, marginTop: 16, fontWeight: 700 }}>
+                Size not available? <span style={{ color:'#000', textDecoration:'underline', cursor:'pointer' }}>Notify Me</span>
+              </p>
             </div>
 
             {/* CTA Button (Desktop only) */}
@@ -347,7 +349,7 @@ const ProductDetailPage = () => {
         left: 0, 
         width: '100%', 
         background: '#fff', 
-        padding: '16px 20px', 
+        padding: '12px 16px', 
         borderTop: '1px solid #eee', 
         zIndex: 1000, 
         alignItems: 'center', 
@@ -355,36 +357,41 @@ const ProductDetailPage = () => {
         boxSizing: 'border-box'
       }}>
         <button
+          onClick={() => setIsWishlisted(!isWishlisted)}
+          style={{
+            flex: 0.4,
+            height: 48,
+            background: '#fff',
+            border: '1.5px solid #eee',
+            borderRadius: 4,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            gap: 8,
+            fontSize: 11,
+            fontWeight: 800,
+            textTransform: 'uppercase'
+          }}
+        >
+          <Heart size={18} fill={isWishlisted ? "#000" : "none"} /> WISHLIST
+        </button>
+        <button
           onClick={handleAddToCart}
           style={{
-            flex: 1,
-            background: '#000',
+            flex: 0.6,
+            height: 48,
+            background: '#e11d48', // High-contrast Red
             color: '#fff',
-            padding: '18px',
-            borderRadius: 40,
-            fontSize: 14,
+            borderRadius: 4,
+            fontSize: 12,
             fontWeight: 900,
             textTransform: 'uppercase',
-            letterSpacing: '0.08em',
+            letterSpacing: '0.05em',
+            border: 'none',
             cursor: 'pointer'
           }}
         >
-          Add to Bag
-        </button>
-        <button style={{ 
-          width: 58, 
-          height: 58, 
-          borderRadius: '50%', 
-          background: '#000', 
-          color: '#fff', 
-          display: 'flex', 
-          alignItems: 'center', 
-          justifyContent: 'center', 
-          flexShrink: 0,
-          cursor: 'pointer',
-          boxShadow: '0 8px 20px rgba(0,0,0,0.1)'
-        }}>
-          <MessageSquare size={24} />
+          ADD TO CART
         </button>
       </div>
 
