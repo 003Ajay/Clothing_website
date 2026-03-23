@@ -104,28 +104,29 @@ const CartDrawer = () => {
                   <span style={{ fontWeight:900, fontSize:18 }}>₹{cartTotal.toLocaleString('en-IN')}</span>
                 </div>
                 <p style={{ fontSize:11, color:'#9ca3af', marginBottom:16, textAlign:'center' }}>Shipping & taxes calculated at checkout</p>
-                <Link
-                  to="/checkout"
-                  onClick={() => setIsCartOpen(false)}
-                  style={{
-                    display:'flex', alignItems:'center', justifyContent:'center', gap:8,
-                    background:'black', color:'white', padding:'16px', width:'100%',
-                    fontWeight:900, fontSize:13, textTransform:'uppercase', letterSpacing:'0.1em'
-                  }}
-                >
-                  Proceed to Checkout <ArrowRight size={16} />
-                </Link>
                 <button
                   onClick={() => setIsCartOpen(false)}
                   style={{
                     display: 'flex', alignItems: 'center', justifyContent: 'center',
                     background: 'transparent', color: 'black', padding: '16px', width: '100%',
                     fontWeight: 900, fontSize: 13, textTransform: 'uppercase', letterSpacing: '0.1em',
-                    border: '1px solid black', marginTop: 12, cursor: 'pointer'
+                    border: '1px solid #eee', marginBottom: 12, cursor: 'pointer', borderRadius: 2
                   }}
                 >
                   Continue Shopping
                 </button>
+                <Link
+                  to="/checkout"
+                  onClick={() => setIsCartOpen(false)}
+                  style={{
+                    display:'flex', alignItems:'center', justifyContent:'center', gap:8,
+                    background:'black', color:'white', padding:'16px', width:'100%',
+                    fontWeight:900, fontSize:13, textTransform:'uppercase', letterSpacing:'0.1em',
+                    borderRadius: 2
+                  }}
+                >
+                  Proceed to Checkout <ArrowRight size={16} />
+                </Link>
               </div>
             )}
           </motion.div>
