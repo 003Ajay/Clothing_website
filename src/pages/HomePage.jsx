@@ -176,11 +176,11 @@ const HomePage = () => {
               Shop The Capsule
             </Link>
             <Link
-              to="/category/gym-wear"
+              to="/category/all"
               className="gs-btn gs-btn-outline"
               style={{ borderColor: '#fff', color: '#fff', padding: '16px 48px', fontSize: 14 }}
             >
-              View Collection
+              Show All Collection
             </Link>
           </div>
         </motion.div>
@@ -253,7 +253,7 @@ const HomePage = () => {
             variants={stagger}
             style={{
               display: 'flex', 
-              gap: 20, 
+              gap: 8, 
               overflowX: 'auto', 
               scrollSnapType: 'x mandatory',
               padding: '60px 0', 
@@ -345,7 +345,7 @@ const HomePage = () => {
               </motion.h2>
             </div>
             <motion.div variants={fadeUp}>
-              <Link to="/category/oversized-tshirts" style={{ fontSize: 12, fontWeight: 900, textTransform: 'uppercase', letterSpacing: '0.1em', borderBottom: '2px solid black', paddingBottom: 2, display: 'inline-flex', alignItems: 'center', gap: 8 }}>
+              <Link to="/category/all" style={{ fontSize: 12, fontWeight: 900, textTransform: 'uppercase', letterSpacing: '0.1em', borderBottom: '2px solid black', paddingBottom: 2, display: 'inline-flex', alignItems: 'center', gap: 8 }}>
                 View All <ArrowRight size={14} />
               </Link>
             </motion.div>
@@ -354,14 +354,41 @@ const HomePage = () => {
           <motion.div
             initial="hidden" whileInView="visible" viewport={{ once: true }}
             variants={stagger}
-            className="grid-ecommerce"
+            style={{ 
+              display: 'flex', 
+              gap: 8, 
+              overflowX: 'auto', 
+              paddingBottom: 20,
+              scrollbarWidth: 'none',
+              msOverflowStyle: 'none'
+            }}
+            className="trending-scroll-container"
           >
+            <style>{`.trending-scroll-container::-webkit-scrollbar { display: none; }`}</style>
             {bestSellers.map(product => (
-              <motion.div key={product.id} variants={fadeUp}>
+              <motion.div 
+                key={product.id} 
+                variants={fadeUp}
+                style={{ flex: '0 0 auto', width: 'clamp(260px, 20vw, 320px)' }}
+              >
                 <ProductCard product={product} />
               </motion.div>
             ))}
           </motion.div>
+          
+          <style dangerouslySetInnerHTML={{ __html: `
+            @media (min-width: 1024px) {
+              .trending-scroll-container {
+                display: grid !important;
+                grid-template-columns: repeat(4, 1fr) !important;
+                gap: 32px !important;
+                overflow-x: visible !important;
+              }
+              .trending-scroll-container > div {
+                width: 100% !important;
+              }
+            }
+          `}} />
         </div>
       </section>
 

@@ -37,7 +37,23 @@ const CartDrawer = () => {
                 </h2>
                 <p style={{ fontSize:12, color:'#9ca3af', marginTop:2 }}>{cart.length} {cart.length === 1 ? 'item' : 'items'}</p>
               </div>
-              <button onClick={() => setIsCartOpen(false)} style={{ padding:8, borderRadius:'50%' }}>
+              <button 
+                onClick={() => setIsCartOpen(false)} 
+                style={{ 
+                  padding: 10, 
+                  borderRadius: '50%', 
+                  background: '#f5f5f5', 
+                  display: 'flex', 
+                  alignItems: 'center', 
+                  justifyContent: 'center',
+                  transition: 'background 0.2s',
+                  border: 'none',
+                  cursor: 'pointer'
+                }}
+                aria-label="Close Cart"
+                onMouseEnter={e => e.currentTarget.style.background = '#eee'}
+                onMouseLeave={e => e.currentTarget.style.background = '#f5f5f5'}
+              >
                 <X size={20} />
               </button>
             </div>
@@ -53,7 +69,7 @@ const CartDrawer = () => {
                   </button>
                 </div>
               ) : (
-                <div style={{ display:'flex', flexDirection:'column', gap:24 }}>
+                <div style={{ display:'flex', flexDirection:'column', gap:16 }}>
                   {cart.map(item => (
                     <div key={`${item.id}-${item.selectedSize}`} style={{ display:'flex', gap:16 }}>
                       <img src={item.image} alt={item.name} style={{ width:90, height:110, objectFit:'cover', flexShrink:0 }} />
@@ -99,6 +115,17 @@ const CartDrawer = () => {
                 >
                   Proceed to Checkout <ArrowRight size={16} />
                 </Link>
+                <button
+                  onClick={() => setIsCartOpen(false)}
+                  style={{
+                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    background: 'transparent', color: 'black', padding: '16px', width: '100%',
+                    fontWeight: 900, fontSize: 13, textTransform: 'uppercase', letterSpacing: '0.1em',
+                    border: '1px solid black', marginTop: 12, cursor: 'pointer'
+                  }}
+                >
+                  Continue Shopping
+                </button>
               </div>
             )}
           </motion.div>

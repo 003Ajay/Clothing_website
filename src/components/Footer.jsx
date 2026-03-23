@@ -42,20 +42,22 @@ const Footer = () => {
         }
         @media (max-width: 640px) {
           .footer-grid { 
-            grid-template-columns: 1fr !important;
-            gap: 2rem !important;
-            text-align: center !important;
+            display: none !important;
           }
           .footer-brand {
+             width: 100% !important;
              display: flex !important;
              flex-direction: column !important;
              align-items: center !important;
+             padding-bottom: 0 !important;
           }
           .footer-bottom {
             flex-direction: column !important;
             align-items: center !important;
             text-align: center !important;
             gap: 1.5rem !important;
+            border-top: none !important;
+            padding-top: 0 !important;
           }
         }
       `}</style>
