@@ -43,6 +43,19 @@ const RESPONSIVE_CSS = `
       gap: 12px !important;
       flex-wrap: wrap !important;
     }
+    .pdp-size-grid > button {
+      flex: 1 0 33.33% !important;
+      border: 1px solid #e5e7eb !important;
+    }
+    .pdp-add-btn-desktop {
+      display: none !important;
+    }
+    .pdp-mobile-bar {
+      display: flex !important;
+    }
+    .desktop-chat {
+      display: none !important;
+    }
   }
   .thumb-scroll::-webkit-scrollbar { display: none; }
   .pdp-size-btn:hover:not(:disabled) { border-color: #000 !important; }
@@ -283,26 +296,28 @@ const ProductDetailPage = () => {
               </div>
             </div>
 
-            {/* CTA Button */}
-            <button
-              onClick={handleAddToCart}
-              className="pdp-add-btn"
-              style={{
-                width: '100%',
-                background: '#000',
-                color: '#fff',
-                padding: '20px',
-                borderRadius: 40,
-                fontSize: 14,
-                fontWeight: 900,
-                textTransform: 'uppercase',
-                letterSpacing: '0.08em',
-                marginBottom: 40,
-                cursor: 'pointer',
-              }}
-            >
-              Add to Bag
-            </button>
+            {/* CTA Button (Desktop only) */}
+            <div className="pdp-add-btn-desktop">
+              <button
+                onClick={handleAddToCart}
+                className="pdp-add-btn"
+                style={{
+                  width: '100%',
+                  background: '#000',
+                  color: '#fff',
+                  padding: '20px',
+                  borderRadius: 40,
+                  fontSize: 14,
+                  fontWeight: 900,
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.08em',
+                  marginBottom: 40,
+                  cursor: 'pointer',
+                }}
+              >
+                Add to Bag
+              </button>
+            </div>
 
             {/* Benefits Row */}
             <div style={{ background: '#f9fafb', padding: '24px', borderRadius: 4, textAlign: 'center' }}>
@@ -337,8 +352,57 @@ const ProductDetailPage = () => {
         )}
       </div>
 
-      {/* Floating Chat Bubble */}
-      <div style={{ position: 'fixed', bottom: 32, right: 32, zIndex: 100 }}>
+      {/* ─ Mobile Sticky Bottom Bar ─ */}
+      <div className="pdp-mobile-bar" style={{ 
+        display: 'none', 
+        position: 'fixed', 
+        bottom: 0, 
+        left: 0, 
+        width: '100%', 
+        background: '#fff', 
+        padding: '16px 20px', 
+        borderTop: '1px solid #eee', 
+        zIndex: 1000, 
+        alignItems: 'center', 
+        gap: 12,
+        boxSizing: 'border-box'
+      }}>
+        <button
+          onClick={handleAddToCart}
+          style={{
+            flex: 1,
+            background: '#000',
+            color: '#fff',
+            padding: '18px',
+            borderRadius: 40,
+            fontSize: 14,
+            fontWeight: 900,
+            textTransform: 'uppercase',
+            letterSpacing: '0.08em',
+            cursor: 'pointer'
+          }}
+        >
+          Add to Bag
+        </button>
+        <button style={{ 
+          width: 58, 
+          height: 58, 
+          borderRadius: '50%', 
+          background: '#000', 
+          color: '#fff', 
+          display: 'flex', 
+          alignItems: 'center', 
+          justifyContent: 'center', 
+          flexShrink: 0,
+          cursor: 'pointer',
+          boxShadow: '0 8px 20px rgba(0,0,0,0.1)'
+        }}>
+          <MessageSquare size={24} />
+        </button>
+      </div>
+
+      {/* Floating Chat Bubble (Desktop) */}
+      <div className="desktop-chat" style={{ position: 'fixed', bottom: 32, right: 32, zIndex: 100 }}>
         <button style={{ width: 64, height: 64, borderRadius: '50%', background: '#000', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 12px 30px rgba(0,0,0,0.25)', cursor: 'pointer' }}>
           <MessageSquare size={28} />
         </button>
