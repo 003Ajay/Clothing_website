@@ -1,99 +1,83 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Instagram, Twitter, Youtube, Mail } from 'lucide-react';
+import { Instagram, Twitter, Youtube, Facebook, Mail } from 'lucide-react';
 
 const Footer = () => {
   const year = new Date().getFullYear();
 
-  const links = {
-    Shop: [
-      { label: 'Oversized T-Shirts', to: '/category/oversized-tshirts' },
-      { label: 'Gym Wear', to: '/category/gym-wear' },
-      { label: 'Casual Wear', to: '/category/casual-wear' },
-      { label: 'Travel Wear', to: '/category/travel-wear' },
-    ],
-    Company: [
-      { label: 'About Us', to: '/about' },
-      { label: 'Contact', to: '/contact' },
-      { label: 'Size Guide', to: '/size-guide' },
-      { label: 'Careers', to: '/careers' },
-    ],
-    Support: [
-      { label: 'FAQs', to: '/faq' },
-      { label: 'Returns & Exchange', to: '/returns' },
-      { label: 'Shipping Policy', to: '/shipping' },
-      { label: 'Track Order', to: '/track-order' },
-    ],
-    Legal: [
-      { label: 'Privacy Policy', to: '/privacy' },
-      { label: 'Terms of Service', to: '/terms' },
-      { label: 'Cookie Policy', to: '/cookies' },
-    ],
-  };
+  const sections = [
+    {
+      title: 'Company',
+      links: [
+        { label: 'About', to: '/about' },
+        { label: 'Features', to: '/features' },
+        { label: 'Works', to: '/works' },
+        { label: 'Career', to: '/career' },
+      ],
+    },
+    {
+      title: 'Help',
+      links: [
+        { label: 'Customer Support', to: '/support' },
+        { label: 'Delivery Details', to: '/delivery' },
+        { label: 'Terms & Conditions', to: '/terms' },
+        { label: 'Privacy Policy', to: '/privacy' },
+      ],
+    },
+    {
+      title: 'FAQ',
+      links: [
+        { label: 'Account', to: '/account' },
+        { label: 'Manage Deliveries', to: '/manage-deliveries' },
+        { label: 'Orders', to: '/orders' },
+        { label: 'Payments', to: '/payments' },
+      ],
+    },
+    {
+      title: 'Resources',
+      links: [
+        { label: 'Free eBooks', to: '/ebooks' },
+        { label: 'Development Tutorial', to: '/tutorials' },
+        { label: 'How to - Blog', to: '/blog' },
+        { label: 'YouTube Playlist', to: '/youtube' },
+      ],
+    },
+  ];
 
   return (
-    <footer style={{ background: '#111', color: '#fff', padding: '64px 0 0', width: '100%', overflow: 'hidden' }}>
-      <style>{`
-        @media (max-width: 1024px) {
-          .footer-grid { 
-            grid-template-columns: 1fr 1fr !important;
-            gap: 2.5rem !important;
-          }
-        }
-        @media (max-width: 640px) {
-          .footer-grid { 
-            display: none !important;
-          }
-          .footer-brand {
-             width: 100% !important;
-             display: flex !important;
-             flex-direction: column !important;
-             align-items: center !important;
-             padding-bottom: 0 !important;
-          }
-          .footer-bottom {
-            flex-direction: column !important;
-            align-items: center !important;
-            text-align: center !important;
-            gap: 1.5rem !important;
-            border-top: none !important;
-            padding-top: 0 !important;
-          }
-        }
-      `}</style>
-      <div style={{ maxWidth: 1440, margin: '0 auto', padding: '0 24px' }}>
-        {/* Top: Brand + Links */}
-        <div className="footer-grid" style={{ display: 'grid', gridTemplateColumns: '1.5fr repeat(4, 1fr)', gap: '3rem', paddingBottom: '3rem', borderBottom: '1px solid rgba(255,255,255,0.1)' }}>
-          {/* Brand */}
-          <div className="footer-brand" style={{ paddingBottom: '1.5rem' }}>
-            <Link to="/" style={{ fontFamily: 'Outfit,sans-serif', fontWeight: 900, fontSize: '1.375rem', letterSpacing: '-0.05em', display: 'block', marginBottom: '1rem' }}>
-              PORTER <span style={{ color: '#6b7280' }}>&</span> BOAT
+    <footer style={{ background: '#f8f8f8', padding: '100px 0 40px', borderTop: '1px solid #eee' }}>
+      <div style={{ maxWidth: 1200, margin: '0 auto', padding: '0 24px' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1.2fr) repeat(4, 1fr)', gap: 40, paddingBottom: 80 }} className="footer-grid">
+          
+          {/* Brand Column */}
+          <div>
+            <Link to="/" style={{ fontFamily: 'Outfit,sans-serif', fontWeight: 900, fontSize: 28, letterSpacing: '-0.03em', color: '#000', textDecoration: 'none', display: 'block', marginBottom: 24 }}>
+              PORTER & BOAT
             </Link>
-            <p style={{ fontSize: '0.8125rem', color: '#9ca3af', lineHeight: 1.7, maxWidth: 260, marginBottom: '1.5rem' }}>
-              Premium men's clothing designed for the modern lifestyle. Gym. Travel. Street.
+            <p style={{ fontSize: 13, color: '#666', lineHeight: 1.6, maxWidth: 260, marginBottom: 32 }}>
+              We have clothes that suit your style and which you're proud to wear. From women to men.
             </p>
-            {/* Trust Badges */}
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-              {['🔒 Secure Payment', '↩ Easy Returns', '🚚 Free Shipping ₹999+', '🏆 Premium Quality'].map(b => (
-                <span key={b} style={{ fontSize: '0.75rem', color: '#9ca3af', fontWeight: 600, letterSpacing: '0.05em' }}>{b}</span>
+            <div style={{ display: 'flex', gap: 12 }}>
+              {[Twitter, Facebook, Instagram, Youtube].map((Icon, i) => (
+                <a key={i} href="#" style={{ width: 36, height: 36, borderRadius: '50%', background: '#fff', border: '1px solid #eee', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#000', transition: '0.2s' }}>
+                  <Icon size={16} />
+                </a>
               ))}
             </div>
           </div>
 
-          {/* Link Columns */}
-          {Object.entries(links).map(([title, items]) => (
-            <div key={title}>
-              <h3 style={{ fontFamily: 'Outfit,sans-serif', fontSize: 11, fontWeight: 900, letterSpacing: '0.15em', textTransform: 'uppercase', color: '#fff', marginBottom: 16 }}>
-                {title}
-              </h3>
-              <ul style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-                {items.map(item => (
-                  <li key={item.label}>
-                    <Link to={item.to} style={{ fontSize: 13, color: '#9ca3af', transition: 'color 0.2s' }}
-                      onMouseEnter={e => e.target.style.color = '#fff'}
-                      onMouseLeave={e => e.target.style.color = '#9ca3af'}
+          {/* Links Columns */}
+          {sections.map(section => (
+            <div key={section.title}>
+              <h3 style={{ fontSize: 13, fontWeight: 900, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 24 }}>{section.title}</h3>
+              <ul style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+                {section.links.map(link => (
+                  <li key={link.label}>
+                    <Link to={link.to} style={{ fontSize: 13, color: '#666', textDecoration: 'none', transition: 'color 0.2s' }} 
+                      onMouseEnter={e => e.target.style.color = '#000'}
+                      onMouseLeave={e => e.target.style.color = '#666'}
                     >
-                      {item.label}
+                      {link.label}
                     </Link>
                   </li>
                 ))}
@@ -102,28 +86,27 @@ const Footer = () => {
           ))}
         </div>
 
-        {/* Bottom */}
-        <div className="footer-bottom" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '24px 0', flexWrap: 'wrap', gap: 16 }}>
-          <div className="mobile-footer-logo" style={{ display: 'none' }}>
-            <Link to="/" style={{ fontFamily: 'Outfit,sans-serif', fontWeight: 900, fontSize: 18, letterSpacing: '-0.05em', color: '#fff', textDecoration: 'none' }}>
-              PORTER & BOAT
-            </Link>
-          </div>
-          <p style={{ fontSize: 12, color: '#6b7280' }}>
-            © {year} Porter & Boat. All rights reserved.
-          </p>
-          <div style={{ display: 'flex', gap: 20 }}>
-            {[Instagram, Twitter, Youtube, Mail].map((Icon, i) => (
-              <a key={i} href="#" style={{ color: '#6b7280', transition: 'color 0.2s' }}
-                onMouseEnter={e => e.currentTarget.style.color = '#fff'}
-                onMouseLeave={e => e.currentTarget.style.color = '#6b7280'}
-              >
-                <Icon size={18} />
-              </a>
-            ))}
+        {/* Footer Bottom */}
+        <div style={{ padding: '40px 0 0', borderTop: '1px solid #eee', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 24 }}>
+          <p style={{ fontSize: 12, color: '#999' }}>Porter & Boat © 2000-2024. All Rights Reserved.</p>
+          <div style={{ display: 'flex', gap: 16, alignItems: 'center' }}>
+             {['visa', 'mastercard', 'googlepay', 'applepay', 'paypal'].map(p => (
+               <div key={p} style={{ width: 44, height: 28, background: '#fff', border: '1px solid #eee', borderRadius: 4, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 10, fontWeight: 900, color: '#eee', textTransform: 'uppercase' }}>
+                 {p}
+               </div>
+             ))}
           </div>
         </div>
       </div>
+
+      <style>{`
+        @media (max-width: 1024px) {
+          .footer-grid { grid-template-columns: 1fr 1fr !important; gap: 60px !important; }
+        }
+        @media (max-width: 640px) {
+          .footer-grid { grid-template-columns: 1fr !important; gap: 40px !important; }
+        }
+      `}</style>
     </footer>
   );
 };

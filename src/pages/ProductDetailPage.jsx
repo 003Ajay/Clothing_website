@@ -1,399 +1,264 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
-import { motion } from 'framer-motion';
-import { ShoppingBag, Zap, ChevronLeft, ChevronRight, Star, Heart, Share2, Ruler, MessageSquare, ArrowLeft, Search } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { 
+  ShoppingBag, 
+  Heart, 
+  Share2, 
+  ChevronRight, 
+  ChevronDown, 
+  Star, 
+  ShieldCheck, 
+  Truck, 
+  Clock, 
+  ArrowLeft,
+  ChevronLeft
+} from 'lucide-react';
 import { useAdmin } from '../context/AdminContext';
 import { useCart } from '../context/CartContext';
 import { useWishlist } from '../context/WishlistContext';
 import ProductCard from '../components/ProductCard';
-
-const RESPONSIVE_CSS = `
-  @media (max-width: 1024px) {
-    .pdp-grid { 
-      grid-template-columns: 1fr !important; 
-      gap: 0 !important; 
-    }
-    .pdp-sticky { 
-      position: static !important; 
-      width: 100% !important; 
-      padding: 2rem 1.25rem !important; 
-      box-sizing: border-box !important;
-    }
-    .pdp-size-grid {
-      display: grid !important;
-      grid-template-columns: repeat(4, 1fr) !important;
-      gap: 10px !important;
-    }
-    .pdp-size-header {
-      flex-direction: row !important;
-      align-items: center !important;
-      justify-content: space-between !important;
-    }
-    .pdp-title {
-      font-size: 1.5rem !important;
-      line-height: 1.2 !important;
-    }
-    .pdp-add-btn-desktop {
-      display: none !important;
-    }
-    .pdp-mobile-bar {
-      display: flex !important;
-    }
-    .desktop-chat {
-      display: none !important;
-    }
-  }
-
-  @media (max-width: 640px) {
-    .pdp-size-grid {
-      grid-template-columns: repeat(3, 1fr) !important;
-    }
-  }
-
-  .thumb-scroll::-webkit-scrollbar { display: none; }
-  .pdp-size-btn:hover:not(:disabled) { border-color: #000 !important; }
-  .pdp-add-btn:active { transform: scale(0.98); }
-  
-  .no-scrollbar::-webkit-scrollbar { display: none; }
-  .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
-`;
-
-const SIZES = ['XS', 'S', 'M', 'L', 'XL', 'XXL', '3XL'];
 
 const ProductDetailPage = () => {
   const { slug } = useParams();
   const { products } = useAdmin();
   const navigate = useNavigate();
   const { addToCart } = useCart();
+  const { toggleWishlist, isInWishlist } = useWishlist();
 
   const product = products.find(p => p.slug === slug);
   const related = products.filter(p => p.id !== product?.id && p.category === product?.category);
 
-  const [selectedSize, setSelectedSize] = useState(null);
+  const [selectedSize, setSelectedSize] = useState('M');
   const [activeImg, setActiveImg] = useState(0);
-  const [isWishlisted, setIsWishlisted] = useState(false);
+  const isWishlisted = product ? isInWishlist(product.id) : false;
+
+  const [activeTab, setActiveTab] = useState('description');
 
   if (!product) {
     return (
-      <main style={{ paddingTop: 120, textAlign: 'center', padding: '160px 24px' }}>
-        <h1 style={{ fontFamily: 'Outfit,sans-serif', fontWeight: 900, fontSize: 32, textTransform: 'uppercase' }}>Product Not Found</h1>
-        <Link to="/" style={{ display: 'inline-block', marginTop: 24, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.1em', borderBottom: '2px solid black', paddingBottom: 2 }}>
-          Back to Home
-        </Link>
+      <main style={{ paddingTop: 120, textAlign: 'center', minHeight: '60vh' }}>
+        <h1 style={{ fontFamily: 'Outfit,sans-serif', fontWeight: 900 }}>Product Not Found</h1>
+        <Link to="/" style={{ color: '#000', textDecoration: 'underline' }}>Back to Home</Link>
       </main>
     );
   }
 
-  // Dummy gallery and variants for UI demonstration matching the mockup
-  const images = [product.image, product.image, product.image, product.image, product.image, product.image, product.image];
-  const variants = [
-    { name: 'Iron Blue', color: '#4a6fa5', img: product.image, filter: 'hue-rotate(180deg) brightness(0.8)' },
-    { name: 'Burnt Orange', color: '#c44d29', img: product.image, filter: 'hue-rotate(20deg) saturate(1.2)' },
-    { name: 'Sage Green', color: '#7a8d7a', img: product.image, filter: 'hue-rotate(90deg) saturate(0.5)' },
-    { name: 'Obsidian Black', color: '#1a1a1a', img: product.image },
-    { name: 'Burgundy', color: '#6b1a1a', img: product.image, filter: 'hue-rotate(330deg) saturate(1.2)' },
-    { name: 'Teal', color: '#1a6b6b', img: product.image, filter: 'hue-rotate(150deg)' },
-  ];
-  const [activeVariant, setActiveVariant] = useState(variants[0]);
+  const images = [product.image, product.image, product.image, product.image];
 
   const handleAddToCart = () => {
-    if (!selectedSize) {
-      alert("Please select a size");
-      return;
-    }
+    if (!selectedSize) return alert("Please select a size");
     addToCart(product, 1, selectedSize);
   };
 
+  const ratings = {
+    average: 4.5,
+    count: 50,
+    bars: [
+      { stars: 5, percent: 80 },
+      { stars: 4, percent: 15 },
+      { stars: 3, percent: 3 },
+      { stars: 2, percent: 1 },
+      { stars: 1, percent: 1 },
+    ]
+  };
+
   return (
-    <main style={{ background: '#fff', minHeight: '100vh', paddingTop: 0, overflowX: 'hidden' }}>
-      <style>{RESPONSIVE_CSS}</style>
-      
-      <div style={{ paddingTop: 80, paddingBottom: 100 }}>
-        {/* Product Layout Grid */}
-        <div className="pdp-grid" style={{ maxWidth: 1200, margin: '0 auto', display: 'grid', gridTemplateColumns: 'minmax(0, 1.3fr) 0.7fr', alignItems: 'start', width: '100%' }}>
+    <main style={{ background: '#fff', paddingTop: 100, paddingBottom: 100 }}>
+      {/* Breadcrumbs */}
+      <div style={{ maxWidth: 1200, margin: '0 auto', padding: '0 24px 20px', display: 'flex', alignItems: 'center', gap: 8, fontSize: 13, color: '#666' }}>
+        <Link to="/" style={{ color: '#666' }}>Home</Link>
+        <ChevronRight size={14} />
+        <span style={{ color: '#000', fontWeight: 600 }}>Product details</span>
+      </div>
+
+      <div style={{ maxWidth: 1200, margin: '0 auto', padding: '0 24px', display: 'grid', gridTemplateColumns: 'minmax(0, 1fr) 450px', gap: 60 }} className="pdp-main-grid">
+        
+        {/* Left: Product Images */}
+        <div style={{ position: 'relative' }}>
+          <div style={{ position: 'relative', borderRadius: 12, overflow: 'hidden', background: '#f8f8f8', aspectRatio: '4/5' }}>
+            <img src={images[activeImg]} alt={product.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+            
+            {/* Pagination Lines */}
+            <div style={{ position: 'absolute', top: 20, left: 0, right: 0, display: 'flex', gap: 6, padding: '0 20px' }}>
+              {images.map((_, i) => (
+                <div key={i} style={{ flex: 1, height: 2, background: activeImg === i ? '#fff' : 'rgba(255,255,255,0.3)', borderRadius: 1 }} />
+              ))}
+            </div>
+          </div>
           
-          {/* ─ Left: Gallery Column ─ */}
-          <div className="pdp-gallery-container" style={{ position: 'relative', width: '100%' }}>
-            <div style={{ position: 'relative', aspectRatio: '4/5', background: '#f5f5f5', overflow: 'hidden' }}>
-              <motion.img
-                key={`${activeImg}-${activeVariant.name}`}
-                src={images[activeImg]}
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ duration: 0.3 }}
-                style={{ width: '100%', height: '100%', objectFit: 'cover', filter: activeVariant.filter }}
-              />
-              
-              <div className="pdp-carousel-dots" style={{ position: 'absolute', bottom: 20, left: '50%', transform: 'translateX(-50%)', display: 'flex', gap: 8 }}>
-                {images.slice(0, 5).map((_, i) => (
-                  <div 
-                    key={i} 
-                    style={{ 
-                      width: activeImg === i ? 20 : 6, 
-                      height: 6, 
-                      borderRadius: 3, 
-                      background: activeImg === i ? '#000' : 'rgba(0,0,0,0.2)', 
-                      transition: '0.3s'
-                    }}
-                  />
-                ))}
-              </div>
+          {/* Thumbnails Row */}
+          <div style={{ display: 'flex', gap: 16, marginTop: 16 }}>
+            {images.map((img, i) => (
+              <button 
+                key={i} 
+                onClick={() => setActiveImg(i)}
+                style={{ 
+                  width: 80, height: 100, borderRadius: 8, overflow: 'hidden', 
+                  border: activeImg === i ? '2px solid #000' : '2px solid transparent',
+                  padding: 0, background: '#f5f5f5'
+                }}
+              >
+                <img src={img} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+              </button>
+            ))}
+          </div>
+        </div>
 
-              {/* Gauge Badge */}
-              <div style={{
-                position: 'absolute', bottom: 20, left: 20,
-                background: 'rgba(0,0,0,0.6)', color: '#fff', fontSize: 10,
-                fontWeight: 900, textTransform: 'uppercase', letterSpacing: '0.05em',
-                padding: '6px 10px', borderRadius: 2, backdropFilter: 'blur(4px)'
-              }}>
-                Premium Heavy Gauge Fabric
-              </div>
+        {/* Right: Product Info */}
+        <div style={{ position: 'sticky', top: 120 }}>
+          <span style={{ background: '#f5f5f5', padding: '4px 12px', borderRadius: 20, fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em' }}>Men Fashion</span>
+          
+          <h1 style={{ fontFamily: 'Outfit, sans-serif', fontSize: 32, fontWeight: 800, margin: '12px 0 8px' }}>{product.name}</h1>
+          <p style={{ fontSize: 24, fontWeight: 800, marginBottom: 20 }}>₹{product.price.toLocaleString('en-IN')}</p>
 
-              {/* Arrow Nav (Desktop) */}
-              <div style={{ position: 'absolute', inset: 0, pointerEvents: 'none', display: 'flex', alignItems: 'center', justifyContent: 'between', padding: '0 20px' }} className="lg-flex">
-                 <button 
-                  onClick={(e) => { e.stopPropagation(); setActiveImg(p => (p - 1 + images.length) % images.length); }} 
-                  style={{ pointerEvents: 'auto', background: '#fff', borderRadius: '50%', width: 40, height: 40, display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 4px 10px rgba(0,0,0,0.1)', cursor: 'pointer', transition: '0.2s' }}
-                  onMouseEnter={e => e.currentTarget.style.transform = 'scale(1.1)'}
-                  onMouseLeave={e => e.currentTarget.style.transform = 'scale(1)'}
-                 > 
-                  <ChevronLeft size={18} /> 
-                 </button>
-                 <div style={{ flex: 1 }} />
-                 <button 
-                  onClick={(e) => { e.stopPropagation(); setActiveImg(p => (p + 1) % images.length); }} 
-                  style={{ pointerEvents: 'auto', background: '#fff', borderRadius: '50%', width: 40, height: 40, display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 4px 10px rgba(0,0,0,0.1)', cursor: 'pointer', transition: '0.2s' }}
-                  onMouseEnter={e => e.currentTarget.style.transform = 'scale(1.1)'}
-                  onMouseLeave={e => e.currentTarget.style.transform = 'scale(1)'}
-                 > 
-                  <ChevronRight size={18} /> 
-                 </button>
-              </div>
+          {/* Delivery Banner */}
+          <div style={{ background: '#f8fafc', padding: '12px 16px', borderRadius: 8, border: '1px solid #e2e8f0', display: 'flex', alignItems: 'center', gap: 12, marginBottom: 32 }}>
+            <Clock size={18} color="#64748b" />
+            <p style={{ fontSize: 12, color: '#475569', fontWeight: 500 }}>
+              Order in <span style={{ fontWeight: 800, color: '#000' }}>02:30:25</span> to get next day delivery
+            </p>
+          </div>
+
+          {/* Size Select */}
+          <div style={{ marginBottom: 32 }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 12 }}>
+              <span style={{ fontSize: 13, fontWeight: 700 }}>Select Size</span>
+            </div>
+            <div style={{ display: 'flex', gap: 12 }}>
+              {['S', 'M', 'L', 'XL', 'XXL'].map(s => (
+                <button
+                  key={s}
+                  onClick={() => setSelectedSize(s)}
+                  style={{
+                    width: 54, height: 54, borderRadius: '50%', border: '1px solid #eee',
+                    background: selectedSize === s ? '#000' : '#fff',
+                    color: selectedSize === s ? '#fff' : '#000',
+                    fontWeight: 700, fontSize: 13, cursor: 'pointer', transition: '0.2s'
+                  }}
+                >
+                  {s}
+                </button>
+              ))}
             </div>
           </div>
 
-          {/* ─ Right: Details Column ─ */}
-          <div className="pdp-sticky" style={{ position: 'sticky', top: 20, padding: '40px 48px' }}>
-            
-            {/* Promo Tag */}
-            <div style={{ display: 'inline-block', background: '#f5f5f5', padding: '0.375rem 0.875rem', fontSize: '0.75rem', fontWeight: 900, textTransform: 'uppercase', marginBottom: '1.25rem', borderRadius: 2 }}>
-              30% OFF | SAVE ₹1,200
-            </div>
+          {/* Actions */}
+          <div style={{ display: 'flex', gap: 12, marginBottom: 40 }}>
+            <button 
+              onClick={handleAddToCart}
+              style={{ flex: 1, background: '#000', color: '#fff', height: 56, borderRadius: 28, fontSize: 15, fontWeight: 800, border: 'none', cursor: 'pointer' }}
+            >
+              Add to Cart
+            </button>
+            <button 
+              onClick={() => toggleWishlist(product)}
+              style={{ width: 56, height: 56, borderRadius: '50%', border: '1px solid #eee', background: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}
+            >
+              <Heart size={20} fill={isWishlisted ? "#000" : "none"} />
+            </button>
+          </div>
 
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 4 }}>
-              <h1 
-                className="pdp-title"
-                style={{ 
-                  fontFamily: 'Outfit, sans-serif', fontSize: '1.25rem', fontWeight: 800, 
-                  textTransform: 'none', color: '#333', flex: 1,
-                  whiteSpace: 'normal', wordBreak: 'break-word', lineHeight: 1.3
-                }}
-              >
-                {product.name}
-              </h1>
-              <button style={{ background: 'none', border:'none', display: 'flex', alignItems: 'center', gap: 4, fontWeight: 900, fontSize: 11, textTransform: 'uppercase', cursor: 'pointer' }}>
-                <Share2 size={16} /> Share
-              </button>
-            </div>
-
-            <p style={{ fontSize: 13, color: '#999', marginBottom: 16 }}>{product.category?.replace('-', ' ')}</p>
-
-            <div className="pdp-price-row" style={{ marginBottom: 2 }}>
-              <span style={{ fontSize: '1.5rem', fontWeight: 900 }}>₹{product.price.toLocaleString('en-IN')}</span>
-            </div>
-            <p style={{ fontSize: 11, color: '#999', marginBottom: 24 }}>Price incl. of all taxes</p>
-
-            {/* Interaction Row (Rating, Wishlist, Share) */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '2.5rem' }}>
-              <div style={{ background: '#f5f5f5', padding: '0.625rem 1.125rem', borderRadius: 30, display: 'flex', alignItems: 'center', gap: '0.375rem', fontSize: '0.875rem', fontWeight: 900 }}>
-                <Star size={16} fill="#000" strokeWidth={0} /> 4.8 <span style={{ color: '#6b7280', fontWeight: 500 }}>(42)</span>
+          {/* Accordions */}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+            {[
+              { id: 'description', title: 'Description & Fit', content: product.description || 'Premium loose-fit hoodie made from medium-weight cotton-blend fabric.' },
+              { id: 'shipping', title: 'Shipping', content: 'Free standard shipping on orders over ₹999. Guaranteed delivery within 3-5 days.' }
+            ].map(item => (
+              <div key={item.id} style={{ border: '1px solid #eee', borderRadius: 12, overflow: 'hidden' }}>
+                <button 
+                  onClick={() => setActiveTab(activeTab === item.id ? '' : item.id)}
+                  style={{ width: '100%', padding: '20px 24px', background: '#fff', border: 'none', display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer' }}
+                >
+                  <span style={{ fontSize: 14, fontWeight: 800 }}>{item.title}</span>
+                  <ChevronDown size={18} style={{ transform: activeTab === item.id ? 'rotate(180deg)' : 'none', transition: '0.3s' }} />
+                </button>
+                <AnimatePresence>
+                  {activeTab === item.id && (
+                    <motion.div 
+                      initial={{ height: 0 }} animate={{ height: 'auto' }} exit={{ height: 0 }}
+                      style={{ overflow: 'hidden' }}
+                    >
+                      <div style={{ padding: '0 24px 20px', fontSize: 13, color: '#666', lineHeight: 1.6 }}>
+                        {item.content}
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
               </div>
-              <button 
-                onClick={() => setIsWishlisted(!isWishlisted)}
-                style={{ width: 44, height: 44, borderRadius: '50%', background: '#f5f5f5', display: 'flex', alignItems: 'center', justifyContent: 'center', color: isWishlisted ? '#f43f5e' : '#000', cursor: 'pointer' }}
-              >
-                <Heart size={20} fill={isWishlisted ? "currentColor" : "none"} strokeWidth={2} />
-              </button>
-              <button style={{ width: 44, height: 44, borderRadius: '50%', background: '#f5f5f5', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}>
-                <Share2 size={20} />
-              </button>
-            </div>
+            ))}
+          </div>
+        </div>
+      </div>
 
-            {/* Color/Variant Selection */}
-            <div style={{ marginBottom: 40, width: '100%', boxSizing: 'border-box' }}>
-              <div className="no-scrollbar" style={{ display: 'flex', gap: 10, overflowX: 'auto', marginBottom: 8, width: '100%', paddingBottom: 4 }}>
-                {variants.map((v, i) => (
-                  <button
-                    key={i}
-                    onClick={() => setActiveVariant(v)}
-                    style={{ 
-                      flex: '0 0 76px', 
-                      height: 94, 
-                      borderRadius: 4, 
-                      overflow: 'hidden', 
-                      border: activeVariant.name === v.name ? '2px solid #000' : '1px solid #eee',
-                      padding: 2,
-                      background: '#fff',
-                      cursor: 'pointer',
-                      flexShrink: 0
-                    }}
-                  >
-                    <img src={v.img} style={{ width: '100%', height: '100%', objectFit: 'cover', filter: v.filter, borderRadius: 2 }} />
-                  </button>
-                ))}
-              </div>
-              <p style={{ fontSize: 13, color: '#6b7280', fontWeight: 600 }}>{activeVariant.name}</p>
+      {/* Ratings Section */}
+      <section style={{ maxWidth: 1200, margin: '100px auto 0', padding: '0 24px' }}>
+        <h2 style={{ fontFamily: 'Outfit, sans-serif', fontSize: 24, fontWeight: 800, marginBottom: 40 }}>Rating & Reviews</h2>
+        
+        <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1fr) 1.5fr', gap: 60, alignItems: 'start' }} className="reviews-grid">
+          <div style={{ display: 'flex', gap: 40, alignItems: 'center' }}>
+            <div style={{ textAlign: 'center' }}>
+              <p style={{ fontSize: 80, fontWeight: 900, fontFamily: 'Outfit, sans-serif', lineHeight: 1 }}>4,5<span style={{ fontSize: 24, color: '#999', fontWeight: 500 }}> / 5</span></p>
+              <p style={{ fontSize: 13, color: '#999', fontWeight: 600, marginTop: 12 }}>({ratings.count} New Reviews)</p>
             </div>
-
-            {/* Size Selection */}
-            <div style={{ marginBottom: 32 }}>
-              <div style={{ display:'flex', justifyContent:'space-between', marginBottom: 16 }}>
-                 <p style={{ fontSize: 13, fontWeight: 800 }}>Please select a size. <span style={{ color:'#000', textDecoration:'underline', marginLeft: 8, cursor:'pointer' }}>SIZE CHART</span></p>
-              </div>
-              <div className="pdp-size-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 10 }}>
-                {['XXS', 'XS', 'S', 'M', 'L', 'XL', 'XXL', '3XL'].map(s => (
-                  <button
-                    key={s}
-                    onClick={() => setSelectedSize(s)}
-                    style={{
-                      padding: '12px 4px',
-                      border: `1.5px solid ${selectedSize === s ? '#000' : '#eee'}`,
-                      background: '#fff',
-                      fontWeight: 800,
-                      fontSize: 12,
-                      borderRadius: 4,
-                      cursor: 'pointer',
-                      color: s === 'XXS' ? '#ccc' : '#000',
-                      textDecoration: s === 'XXS' ? 'line-through' : 'none',
-                      width: '100%',
-                      boxSizing: 'border-box'
-                    }}
-                  >
-                    {s}
-                  </button>
-                ))}
-              </div>
-              <p style={{ fontSize: 12, marginTop: 16, fontWeight: 700 }}>
-                Size not available? <span style={{ color:'#000', textDecoration:'underline', cursor:'pointer' }}>Notify Me</span>
-              </p>
-            </div>
-
-            {/* CTA Button (Desktop only) */}
-            <div className="pdp-add-btn-desktop">
-              <button
-                onClick={handleAddToCart}
-                className="pdp-add-btn"
-                style={{
-                  width: '100%',
-                  background: '#000',
-                  color: '#fff',
-                  padding: '20px',
-                  borderRadius: 40,
-                  fontSize: 14,
-                  fontWeight: 900,
-                  textTransform: 'uppercase',
-                  letterSpacing: '0.08em',
-                  marginBottom: 40,
-                  cursor: 'pointer',
-                }}
-              >
-                Add to Bag
-              </button>
-            </div>
-
-            {/* Benefits Row */}
-            <div style={{ background: '#f9fafb', padding: '24px', borderRadius: 4, textAlign: 'center' }}>
-              <p style={{ fontSize: 13, fontWeight: 900, textDecoration: 'underline', marginBottom: 6, cursor: 'pointer' }}>Unlock Access to Exclusive Rewards & Benefits</p>
-              <p style={{ fontSize: 11, color: '#6b7280', fontWeight: 600 }}>Purchasing this product earns 336XP</p>
-            </div>
-
-            {/* Accordion List (Simulated) */}
-            <div style={{ marginTop: 40, borderTop: '1px solid #eee' }}>
-              {['Description', 'Build & Materials', 'Features & Delivery'].map((item, i) => (
-                <div key={i} style={{ padding: '20px 0', borderBottom: '1px solid #eee', display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer' }}>
-                  <span style={{ fontSize: 13, fontWeight: 800, textTransform: 'uppercase' }}>{item}</span>
-                  <ChevronRight size={18} />
+            <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 12 }}>
+              {ratings.bars.map(bar => (
+                <div key={bar.stars} style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                   <span style={{ fontSize: 12, fontWeight: 700, width: 20 }}>{bar.stars} ★</span>
+                   <div style={{ flex: 1, height: 4, background: '#f0f0f0', borderRadius: 2 }}>
+                      <div style={{ width: `${bar.percent}%`, height: '100%', background: '#000', borderRadius: 2 }} />
+                   </div>
                 </div>
               ))}
             </div>
           </div>
-        </div>
 
-        {/* Related Section */}
-        {related.length > 0 && (
-          <section style={{ marginTop: '6rem', padding: '0 1.25rem' }}>
-            <div style={{ maxWidth: 1200, margin: '0 auto' }}>
-              <h2 style={{ fontFamily: 'Outfit, sans-serif', fontSize: '1.5rem', fontWeight: 900, textTransform: 'uppercase', marginBottom: '2.5rem' }}>You May Also Like</h2>
-              <div className="grid-ecommerce">
-                {related.slice(0, 4).map(p => (
-                  <ProductCard key={p.id} product={p} />
-                ))}
+          {/* Individual Reviews */}
+          <div style={{ border: '1px solid #eee', borderRadius: 16, padding: 32, position: 'relative' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 16 }}>
+              <div style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
+                <div style={{ width: 44, height: 44, borderRadius: '50%', background: '#eee', overflow:'hidden' }}>
+                    <img src="https://i.pravatar.cc/150?u=alex" alt="Alex" />
+                </div>
+                <div>
+                   <p style={{ fontSize: 14, fontWeight: 800 }}>Alex Mathio</p>
+                   <div style={{ display: 'flex', color: '#000', marginTop: 2 }}>
+                     {[...Array(5)].map((_, i) => <Star key={i} size={12} fill="#000" />)}
+                   </div>
+                </div>
               </div>
+              <span style={{ fontSize: 12, color: '#999' }}>13 Oct 2024</span>
             </div>
-          </section>
-        )}
-      </div>
+            <p style={{ fontSize: 14, color: '#444', lineHeight: 1.6, marginBottom: 16 }}>
+              "Porter & Boat's dedication to sustainability and ethical practices resonates strongly with today's consumers, positioning the brand as a responsible choice in the fashion world."
+            </p>
+            <div style={{ display: 'flex', gap: 8 }}>
+                <button style={{ position:'absolute', right: -24, top: '50%', width: 48, height: 48, borderRadius: '50%', background: '#fff', border:'1px solid #eee', display:'flex', alignItems:'center', justifyContent:'center', boxShadow: '0 4px 12px rgba(0,0,0,0.05)' }}>
+                  <ChevronRight size={20} />
+                </button>
+            </div>
+          </div>
+        </div>
+      </section>
 
-      {/* ─ Mobile Sticky Bottom Bar ─ */}
-      <div className="pdp-mobile-bar" style={{ 
-        display: 'none', 
-        position: 'fixed', 
-        bottom: 0, 
-        left: 0, 
-        width: '100%', 
-        background: '#fff', 
-        padding: '12px 16px', 
-        borderTop: '1px solid #eee', 
-        zIndex: 1000, 
-        alignItems: 'center', 
-        gap: 12,
-        boxSizing: 'border-box'
-      }}>
-        <button
-          onClick={() => setIsWishlisted(!isWishlisted)}
-          style={{
-            flex: 0.4,
-            height: 48,
-            background: '#fff',
-            border: '1.5px solid #eee',
-            borderRadius: 4,
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            gap: 8,
-            fontSize: 11,
-            fontWeight: 800,
-            textTransform: 'uppercase'
-          }}
-        >
-          <Heart size={18} fill={isWishlisted ? "#000" : "none"} /> WISHLIST
-        </button>
-        <button
-          onClick={handleAddToCart}
-          style={{
-            flex: 0.6,
-            height: 48,
-            background: '#e11d48', // High-contrast Red
-            color: '#fff',
-            borderRadius: 4,
-            fontSize: 12,
-            fontWeight: 900,
-            textTransform: 'uppercase',
-            letterSpacing: '0.05em',
-            border: 'none',
-            cursor: 'pointer'
-          }}
-        >
-          ADD TO CART
-        </button>
-      </div>
+      {/* Recommended Section */}
+      {related.length > 0 && (
+        <section style={{ maxWidth: 1200, margin: '140px auto 0', padding: '0 24px' }}>
+          <h2 style={{ fontFamily: 'Outfit, sans-serif', fontSize: 36, fontWeight: 800, textAlign: 'center', marginBottom: 60 }}>You might also like</h2>
+          <div className="grid-ecommerce">
+            {related.slice(0, 4).map(p => (
+              <ProductCard key={p.id} product={p} />
+            ))}
+          </div>
+        </section>
+      )}
 
-      {/* Floating Chat Bubble (Desktop) */}
-      <div className="desktop-chat" style={{ position: 'fixed', bottom: 32, right: 32, zIndex: 100 }}>
-        <button style={{ width: 64, height: 64, borderRadius: '50%', background: '#000', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 12px 30px rgba(0,0,0,0.25)', cursor: 'pointer' }}>
-          <MessageSquare size={28} />
-        </button>
-      </div>
+      <style>{`
+        @media (max-width: 1024px) {
+          .pdp-main-grid { grid-template-columns: 1fr !important; gap: 40px !important; }
+          .reviews-grid { grid-template-columns: 1fr !important; gap: 40px !important; }
+        }
+      `}</style>
     </main>
   );
 };
