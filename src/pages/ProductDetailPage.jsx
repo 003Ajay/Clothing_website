@@ -64,7 +64,7 @@ const ProductDetailPage = () => {
   };
 
   return (
-    <main style={{ background: '#fff', paddingTop: 100, paddingBottom: 100 }}>
+    <main style={{ background: '#fff', paddingTop: 80, paddingBottom: 60 }}>
       {/* Breadcrumbs */}
       <div style={{ maxWidth: 1200, margin: '0 auto', padding: '0 24px 20px', display: 'flex', alignItems: 'center', gap: 8, fontSize: 13, color: '#666' }}>
         <Link to="/" style={{ color: '#666' }}>Home</Link>
@@ -72,10 +72,10 @@ const ProductDetailPage = () => {
         <span style={{ color: '#000', fontWeight: 600 }}>Product details</span>
       </div>
 
-      <div style={{ maxWidth: 1200, margin: '0 auto', padding: '0 24px', display: 'grid', gridTemplateColumns: 'minmax(0, 1fr) 450px', gap: 60 }} className="pdp-main-grid">
+      <div style={{ maxWidth: 1200, margin: '0 auto', padding: '0 24px', display: 'grid', gridTemplateColumns: 'minmax(0, 0.8fr) minmax(0, 1.2fr)', gap: 40 }} className="pdp-main-grid">
         
         {/* Left: Product Images */}
-        <div style={{ position: 'relative' }}>
+        <div style={{ position: 'relative', maxWidth: 450, margin: '0 auto', width: '100%' }}>
           <div style={{ position: 'relative', borderRadius: 12, overflow: 'hidden', background: '#f8f8f8', aspectRatio: '4/5' }}>
             <img src={images[activeImg]} alt={product.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
             
@@ -113,7 +113,7 @@ const ProductDetailPage = () => {
           <p style={{ fontSize: 24, fontWeight: 800, marginBottom: 20 }}>₹{product.price.toLocaleString('en-IN')}</p>
 
           {/* Delivery Banner */}
-          <div style={{ background: '#f8fafc', padding: '12px 16px', borderRadius: 8, border: '1px solid #e2e8f0', display: 'flex', alignItems: 'center', gap: 12, marginBottom: 32 }}>
+          <div style={{ background: '#f8fafc', padding: '12px 16px', borderRadius: 8, border: '1px solid #e2e8f0', display: 'flex', alignItems: 'center', gap: 12, marginBottom: 24 }}>
             <Clock size={18} color="#64748b" />
             <p style={{ fontSize: 12, color: '#475569', fontWeight: 500 }}>
               Order in <span style={{ fontWeight: 800, color: '#000' }}>02:30:25</span> to get next day delivery
@@ -121,7 +121,7 @@ const ProductDetailPage = () => {
           </div>
 
           {/* Size Select */}
-          <div style={{ marginBottom: 32 }}>
+          <div style={{ marginBottom: 24 }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 12 }}>
               <span style={{ fontSize: 13, fontWeight: 700 }}>Select Size</span>
             </div>
@@ -144,7 +144,7 @@ const ProductDetailPage = () => {
           </div>
 
           {/* Actions */}
-          <div style={{ display: 'flex', gap: 12, marginBottom: 40 }}>
+          <div style={{ display: 'flex', gap: 12, marginBottom: 32 }}>
             <button 
               onClick={handleAddToCart}
               style={{ flex: 1, background: '#000', color: '#fff', height: 56, borderRadius: 28, fontSize: 15, fontWeight: 800, border: 'none', cursor: 'pointer' }}
@@ -192,10 +192,10 @@ const ProductDetailPage = () => {
       </div>
 
       {/* Ratings Section */}
-      <section style={{ maxWidth: 1200, margin: '100px auto 0', padding: '0 24px' }}>
-        <h2 style={{ fontFamily: 'Outfit, sans-serif', fontSize: 24, fontWeight: 800, marginBottom: 40 }}>Rating & Reviews</h2>
+      <section style={{ maxWidth: 1200, margin: '60px auto 0', padding: '0 24px' }}>
+        <h2 style={{ fontFamily: 'Outfit, sans-serif', fontSize: 24, fontWeight: 800, marginBottom: 32 }}>Rating & Reviews</h2>
         
-        <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1fr) 1.5fr', gap: 60, alignItems: 'start' }} className="reviews-grid">
+        <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1fr) 1.5fr', gap: 40, alignItems: 'start' }} className="reviews-grid">
           <div style={{ display: 'flex', gap: 40, alignItems: 'center' }}>
             <div style={{ textAlign: 'center' }}>
               <p style={{ fontSize: 80, fontWeight: 900, fontFamily: 'Outfit, sans-serif', lineHeight: 1 }}>4,5<span style={{ fontSize: 24, color: '#999', fontWeight: 500 }}> / 5</span></p>
@@ -243,8 +243,8 @@ const ProductDetailPage = () => {
 
       {/* Recommended Section */}
       {related.length > 0 && (
-        <section style={{ maxWidth: 1200, margin: '140px auto 0', padding: '0 24px' }}>
-          <h2 style={{ fontFamily: 'Outfit, sans-serif', fontSize: 36, fontWeight: 800, textAlign: 'center', marginBottom: 60 }}>You might also like</h2>
+        <section style={{ maxWidth: 1200, margin: '60px auto 0', padding: '0 24px' }}>
+          <h2 style={{ fontFamily: 'Outfit, sans-serif', fontSize: 36, fontWeight: 800, textAlign: 'center', marginBottom: 40 }}>You might also like</h2>
           <div className="grid-ecommerce">
             {related.slice(0, 4).map(p => (
               <ProductCard key={p.id} product={p} />
@@ -255,8 +255,8 @@ const ProductDetailPage = () => {
 
       <style>{`
         @media (max-width: 1024px) {
-          .pdp-main-grid { grid-template-columns: 1fr !important; gap: 40px !important; }
-          .reviews-grid { grid-template-columns: 1fr !important; gap: 40px !important; }
+          .pdp-main-grid { grid-template-columns: 1fr !important; gap: 32px !important; }
+          .reviews-grid { grid-template-columns: 1fr !important; gap: 32px !important; }
         }
       `}</style>
     </main>
