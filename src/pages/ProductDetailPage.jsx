@@ -15,37 +15,21 @@ const RESPONSIVE_CSS = `
     .pdp-sticky { 
       position: static !important; 
       width: 100% !important; 
-      padding: 24px 20px !important; 
+      padding: 2rem 1.25rem !important; 
       box-sizing: border-box !important;
     }
     .pdp-size-grid {
-      display: flex !important;
-      flex-wrap: wrap !important;
-    }
-    .pdp-size-grid > button {
-      flex: 1 0 25% !important;
-      border: 1px solid #e5e7eb !important;
+      display: grid !important;
+      grid-template-columns: repeat(4, 1fr) !important;
     }
     .pdp-size-header {
-      flex-direction: column !important;
-      align-items: flex-start !important;
-      gap: 12px !important;
+      flex-direction: row !important;
+      align-items: center !important;
+      justify-content: space-between !important;
     }
     .pdp-title {
-      font-size: 24px !important;
+      font-size: 1.5rem !important;
       line-height: 1.2 !important;
-      overflow-wrap: break-word !important;
-      word-wrap: break-word !important;
-      width: 100% !important;
-      display: block !important;
-    }
-    .pdp-price-row {
-      gap: 12px !important;
-      flex-wrap: wrap !important;
-    }
-    .pdp-size-grid > button {
-      flex: 1 0 33.33% !important;
-      border: 1px solid #e5e7eb !important;
     }
     .pdp-add-btn-desktop {
       display: none !important;
@@ -57,18 +41,19 @@ const RESPONSIVE_CSS = `
       display: none !important;
     }
   }
+
+  @media (max-width: 640px) {
+    .pdp-size-grid {
+      grid-template-columns: repeat(3, 1fr) !important;
+    }
+  }
+
   .thumb-scroll::-webkit-scrollbar { display: none; }
   .pdp-size-btn:hover:not(:disabled) { border-color: #000 !important; }
   .pdp-add-btn:active { transform: scale(0.98); }
   
-  /* Gymshark Style Scrollbar Hider */
-  .no-scrollbar::-webkit-scrollbar {
-    display: none;
-  }
-  .no-scrollbar {
-    -ms-overflow-style: none;
-    scrollbar-width: none;
-  }
+  .no-scrollbar::-webkit-scrollbar { display: none; }
+  .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
 `;
 
 const SIZES = ['XS', 'S', 'M', 'L', 'XL', 'XXL', '3XL'];
@@ -207,26 +192,28 @@ const ProductDetailPage = () => {
           <div className="pdp-sticky" style={{ position: 'sticky', top: 20, padding: '40px 48px' }}>
             
             {/* Promo Tag */}
-            <div style={{ display: 'inline-block', background: '#f5f5f5', padding: '6px 14px', fontSize: 12, fontWeight: 900, textTransform: 'uppercase', marginBottom: 20, borderRadius: 2 }}>
-              30% OFF | SAVE US$18
+            <div style={{ display: 'inline-block', background: '#f5f5f5', padding: '0.375rem 0.875rem', fontSize: '0.75rem', fontWeight: 900, textTransform: 'uppercase', marginBottom: '1.25rem', borderRadius: 2 }}>
+              30% OFF | SAVE ₹1,200
             </div>
 
             <h1 
               className="pdp-title"
-              style={{ fontFamily: 'Outfit, sans-serif', fontSize: 'clamp(24px, 3.5vw, 32px)', fontWeight: 900, textTransform: 'uppercase', letterSpacing: '-0.02em', lineHeight: 1.1, marginBottom: 12 }}
+              style={{ fontFamily: 'Outfit, sans-serif', fontSize: 'clamp(1.5rem, 5vw, 2rem)', fontWeight: 900, textTransform: 'uppercase', letterSpacing: '-0.02em', lineHeight: 1.1, marginBottom: '0.75rem' }}
             >
               {product.name}
             </h1>
 
-            <div className="pdp-price-row" style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 32 }}>
-              <span style={{ fontSize: 18, fontWeight: 900 }}>US${(product.price / 30).toFixed(0)}</span>
-              <span style={{ fontSize: 18, color: '#f43f5e', textDecoration: 'line-through', fontWeight: 800 }}>US${((product.price / 30) * 1.4).toFixed(0)}</span>
+            <div className="pdp-price-row" style={{ display: 'flex', alignItems: 'center', gap: '0.625rem', marginBottom: '2rem' }}>
+              <span style={{ fontSize: '1.25rem', fontWeight: 900 }}>₹{product.price.toLocaleString('en-IN')}</span>
+              {product.oldPrice && (
+                <span style={{ fontSize: '1.125rem', color: '#f43f5e', textDecoration: 'line-through', fontWeight: 800 }}>₹{product.oldPrice.toLocaleString('en-IN')}</span>
+              )}
             </div>
 
             {/* Interaction Row (Rating, Wishlist, Share) */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: 16, marginBottom: 40 }}>
-              <div style={{ background: '#f5f5f5', padding: '10px 18px', borderRadius: 30, display: 'flex', alignItems: 'center', gap: 6, fontSize: 14, fontWeight: 900 }}>
-                <Star size={16} fill="#000" strokeWidth={0} /> 3.4 <span style={{ color: '#6b7280', fontWeight: 500 }}>(9)</span>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '2.5rem' }}>
+              <div style={{ background: '#f5f5f5', padding: '0.625rem 1.125rem', borderRadius: 30, display: 'flex', alignItems: 'center', gap: '0.375rem', fontSize: '0.875rem', fontWeight: 900 }}>
+                <Star size={16} fill="#000" strokeWidth={0} /> 4.8 <span style={{ color: '#6b7280', fontWeight: 500 }}>(42)</span>
               </div>
               <button 
                 onClick={() => setIsWishlisted(!isWishlisted)}
@@ -339,10 +326,10 @@ const ProductDetailPage = () => {
 
         {/* Related Section */}
         {related.length > 0 && (
-          <section style={{ marginTop: 100, padding: '0 20px' }}>
+          <section style={{ marginTop: '6rem', padding: '0 1.25rem' }}>
             <div style={{ maxWidth: 1200, margin: '0 auto' }}>
-              <h2 style={{ fontFamily: 'Outfit, sans-serif', fontSize: 24, fontWeight: 900, textTransform: 'uppercase', marginBottom: 40 }}>You May Also Like</h2>
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: 32 }}>
+              <h2 style={{ fontFamily: 'Outfit, sans-serif', fontSize: '1.5rem', fontWeight: 900, textTransform: 'uppercase', marginBottom: '2.5rem' }}>You May Also Like</h2>
+              <div className="grid-ecommerce">
                 {related.slice(0, 4).map(p => (
                   <ProductCard key={p.id} product={p} />
                 ))}
