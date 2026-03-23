@@ -1,8 +1,10 @@
 import React, { useState, useMemo } from 'react';
-import { useParams, Link, useSearchParams } from 'react-router-dom';
+import { useParams, Link, useSearchParams, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ChevronDown, SlidersHorizontal, X } from 'lucide-react';
+import { ChevronDown, SlidersHorizontal, X, ArrowLeft, Search, Heart, ShoppingBag, Menu, ListFilter, ArrowUpDown } from 'lucide-react';
 import { useAdmin } from '../context/AdminContext';
+import { useWishlist } from '../context/WishlistContext';
+import { useCart } from '../context/CartContext';
 import ProductCard from '../components/ProductCard';
 
 const SIZES = ['S', 'M', 'L', 'XL', 'XXL'];
@@ -58,11 +60,14 @@ const FilterPanel = ({ selectedSizes, toggleSize, selectedFits, toggleFit, price
 );
 
 const CategoryPage = () => {
+  const navigate = useNavigate();
   const { slug } = useParams();
   const [searchParams] = useSearchParams();
   const searchTerm = searchParams.get('search')?.toLowerCase();
 
   const { products: allProducts, categories } = useAdmin();
+  const { wishlist } = useWishlist();
+  const { setIsCartOpen } = useCart();
   const category = categories.find(c => c.slug === slug);
 
   const [sortBy, setSortBy] = useState('default');
@@ -91,47 +96,62 @@ const CategoryPage = () => {
     return filtered;
   }, [catId, sortBy, priceRange, allProducts, searchTerm]);
 
-  const pageTitle = category ? `${category.name} for Men | Porter & Boat` : 'All Products | Porter & Boat';
-  const pageDesc = category
-    ? `Shop premium ${category.name.toLowerCase()} at Porter & Boat. High-quality men's clothing designed for gym, travel and street. Free shipping above ₹999.`
-    : 'Shop all premium men\'s clothing at Porter & Boat.';
+  const pageTitle = category ? `${category.name} | Porter & Boat` : 'Catalog | Porter & Boat';
 
   const toggleSize = s => setSelectedSizes(prev => prev.includes(s) ? prev.filter(x => x !== s) : [...prev, s]);
   const toggleFit = f => setSelectedFits(prev => prev.includes(f) ? prev.filter(x => x !== f) : [...prev, f]);
 
   return (
     <>
-      {/* Dynamic SEO Title */}
-      <title>{pageTitle}</title>
-
-      <main style={{ paddingTop: 80 }}>
-        {/* Category Hero */}
-        {category && (
-          <div style={{ position: 'relative', height: 450, overflow: 'hidden' }}>
-            <img
-              src={category.image}
-              alt={`${category.name} – Premium Men's ${category.name} India`}
-              style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-            />
-            <div style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.45)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column', gap: 8 }}>
-              <nav aria-label="breadcrumb" style={{ display: 'flex', gap: 8, color: 'rgba(255,255,255,0.6)', fontSize: 12, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.1em' }}>
-                <Link to="/" style={{ color: 'rgba(255,255,255,0.6)' }}>Home</Link>
-                <span>/</span>
-                <span style={{ color: '#fff' }}>{category.name}</span>
-              </nav>
-              <motion.h1
-                initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.7 }}
-                style={{ fontFamily: 'Outfit,sans-serif', fontWeight: 900, fontSize: 'clamp(32px,5vw,56px)', color: '#fff', textTransform: 'uppercase', letterSpacing: '-0.03em', textAlign: 'center' }}
-              >
-                {category.name}
-              </motion.h1>
-            </div>
+      <main style={{ paddingBottom: 80 }}>
+        {/* Mobile Header: Back Arrow | Title | Search | Wishlist | Bag */}
+        <header className="catalog-header lg-hidden">
+          <button onClick={() => navigate(-1)} style={{ background:'none', border:'none', padding:0, cursor:'pointer' }}>
+            <ArrowLeft size={22} />
+          </button>
+          <h1 style={{ fontFamily:'Outfit,sans-serif' }}>{category?.name || 'All Merchandise'}</h1>
+          <div style={{ display:'flex', gap: 16, alignItems:'center' }}>
+            <button style={{ background:'none', border:'none', padding:0, cursor:'pointer' }}>
+              <Search size={22} />
+            </button>
+            <Link to="/wishlist" style={{ color:'#000', textDecoration:'none' }}>
+               <div style={{ position:'relative' }}>
+                 <Heart size={22} />
+                 {wishlist.length > 0 && (
+                   <span style={{ position:'absolute', top:-4, right:-4, background:'#000', color:'#fff', width:14, height:14, borderRadius:'50%', fontSize:8, display:'flex', alignItems:'center', justifyContent:'center', fontWeight:900 }}>
+                     {wishlist.length}
+                   </span>
+                 )}
+               </div>
+            </Link>
+            <button onClick={() => setIsCartOpen(true)} style={{ background:'none', border:'none', padding:0, cursor:'pointer' }}>
+              <ShoppingBag size={22} />
+            </button>
           </div>
-        )}
+        </header>
 
-        {/* Toolbar */}
-        <div style={{ maxWidth: 1440, margin: '0 auto', padding: '24px 24px 0', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 12 }}>
-          <p style={{ fontSize: 13, color: '#6b7280', fontWeight: 600 }}>{products.length} products</p>
+        {/* Horizontal Category Pill Navigation */}
+        <div className="category-pills-scroll">
+          <Link to="/category/all" className={`category-pill ${!slug || slug === 'all' ? 'active' : ''}`}>
+            All Products
+          </Link>
+          {categories.map(cat => (
+            <Link 
+              key={cat.id} 
+              to={`/category/${cat.slug}`} 
+              className={`category-pill ${slug === cat.slug ? 'active' : ''}`}
+            >
+              {cat.name}
+            </Link>
+          ))}
+        </div>
+
+        {/* Desktop Layout Header (Remains standard) */}
+        <div className="md-hidden lg-flex" style={{ maxWidth: 1440, margin: '0 auto', padding: '120px 24px 0', justifyContent: 'space-between', alignItems: 'center' }}>
+          <div>
+            <h1 style={{ fontFamily:'Outfit,sans-serif', fontWeight:900, fontSize:24, textTransform:'uppercase' }}>{category?.name || 'All Products'}</h1>
+            <p style={{ fontSize: 13, color: '#6b7280', fontWeight: 600, marginTop:4 }}>{products.length} products found</p>
+          </div>
           <div style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
             <button
               onClick={() => setShowFilters(!showFilters)}
@@ -155,18 +175,16 @@ const CategoryPage = () => {
           </div>
         </div>
 
-        {/* Main Layout */}
-        <div style={{ maxWidth: 1440, margin: '0 auto', padding: '24px', display: 'flex', gap: showFilters ? 48 : 0 }}>
+        {/* Main Products Grid */}
+        <div style={{ maxWidth: 1440, margin: '0 auto', padding: '16px', display: 'flex', gap: (showFilters && window.innerWidth > 1024) ? 48 : 0 }}>
           {/* Desktop Filters Side Panel */}
           <AnimatePresence>
-            {showFilters && (
+            {showFilters && window.innerWidth > 1024 && (
               <motion.div 
                 initial={{ opacity: 0, width: 0, marginRight: -48 }}
                 animate={{ opacity: 1, width: 220, marginRight: 0 }}
                 exit={{ opacity: 0, width: 0, marginRight: -48 }}
                 style={{ overflow: 'hidden' }}
-                // Show on desktop (>1024px), hide on mobile
-                className="md-hidden lg-block"
               >
                 <FilterPanel 
                   selectedSizes={selectedSizes} toggleSize={toggleSize}
@@ -186,7 +204,7 @@ const CategoryPage = () => {
             ) : (
               <div className="grid-ecommerce">
                 {products.map(product => (
-                  <motion.div key={product.id} layout>
+                  <motion.div key={product.id} layout initial={{ opacity:0 }} animate={{ opacity:1 }}>
                     <ProductCard product={product} />
                   </motion.div>
                 ))}
@@ -195,23 +213,21 @@ const CategoryPage = () => {
           </div>
         </div>
 
-        {/* Mobile Filter Drawer (Exclusive for mobile/tablet < 1024px) */}
+        {/* Mobile Mobile Filter Drawer */}
         <AnimatePresence>
-          {showFilters && (
-            <div className="lg-hidden">
-              <motion.div 
-                initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-                onClick={() => setShowFilters(false)} 
-                style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.5)', zIndex: 200 }} 
-              />
+          {showFilters && window.innerWidth <= 1024 && (
+            <motion.div 
+              initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+              style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.5)', zIndex: 1000 }}
+            >
               <motion.div 
                 initial={{ x: '-100%' }} animate={{ x: 0 }} exit={{ x: '-100%' }}
                 transition={{ type: 'tween', duration: 0.3 }}
-                style={{ position: 'absolute', left: 0, top: 0, bottom: 0, width: '85%', maxWidth: 320, background: '#fff', padding: 32, overflowY: 'auto', zIndex: 201 }}
+                style={{ position: 'absolute', left: 0, top: 0, bottom: 0, width: '85%', maxWidth: 320, background: '#fff', padding: 32, overflowY: 'auto' }}
               >
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 32 }}>
                   <h2 style={{ fontFamily: 'Outfit,sans-serif', fontWeight: 900, fontSize: 14, textTransform: 'uppercase', letterSpacing: '0.1em' }}>Filters</h2>
-                  <button onClick={() => setShowFilters(false)}><X size={20} /></button>
+                  <button onClick={() => setShowFilters(false)} style={{ background:'none', border:'none', cursor:'pointer' }}><X size={20} /></button>
                 </div>
                 <FilterPanel 
                   selectedSizes={selectedSizes} toggleSize={toggleSize}
@@ -219,9 +235,25 @@ const CategoryPage = () => {
                   priceRange={priceRange} setPriceRange={setPriceRange}
                 />
               </motion.div>
-            </div>
+            </motion.div>
           )}
         </AnimatePresence>
+
+        {/* Mobile Sticky Bottom Bar: MENU | FILTER | SORT */}
+        <div className="sticky-bottom-bar lg-hidden">
+          <button className="sticky-bar-btn" onClick={() => navigate('/')}>
+            <Menu size={18} /> Menu
+          </button>
+          <button className="sticky-bar-btn" onClick={() => setShowFilters(true)}>
+            <ListFilter size={18} /> Filter
+          </button>
+          <button 
+            className="sticky-bar-btn" 
+            onClick={() => setSortBy(prev => prev === 'price_asc' ? 'price_desc' : 'price_asc')}
+          >
+            <ArrowUpDown size={18} /> Sort
+          </button>
+        </div>
       </main>
     </>
   );

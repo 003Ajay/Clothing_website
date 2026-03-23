@@ -36,6 +36,22 @@ export const AdminProvider = ({ children }) => {
   useEffect(() => { localStorage.setItem('pb_categories', JSON.stringify(categories)); }, [categories]);
   useEffect(() => { localStorage.setItem('pb_orders', JSON.stringify(orders)); }, [orders]);
 
+  // AUTO-SYNC SOURCE CODE TO LOCALSTORAGE
+  useEffect(() => {
+    // Increment this whenever you update INITIAL_PRODUCTS or INITIAL_CATEGORIES
+    const CURRENT_VERSION = "v1.0.3"; 
+    const savedVersion = localStorage.getItem('pb_data_version');
+    
+    if (savedVersion !== CURRENT_VERSION) {
+      localStorage.setItem('pb_products', JSON.stringify(INITIAL_PRODUCTS));
+      localStorage.setItem('pb_categories', JSON.stringify(INITIAL_CATEGORIES));
+      localStorage.setItem('pb_data_version', CURRENT_VERSION);
+      // Force state update to match new initial data
+      setProducts(INITIAL_PRODUCTS);
+      setCategories(INITIAL_CATEGORIES);
+    }
+  }, []);
+
   const login = (username, password) => {
     if (username === ADMIN_CREDENTIALS.username && password === ADMIN_CREDENTIALS.password) {
       sessionStorage.setItem('pb_admin_auth', 'true');
