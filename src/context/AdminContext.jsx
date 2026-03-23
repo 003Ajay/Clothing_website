@@ -1,4 +1,17 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
+import { db } from '../firebase';
+import { 
+  collection, 
+  getDocs, 
+  addDoc, 
+  updateDoc, 
+  deleteDoc, 
+  doc, 
+  onSnapshot,
+  query,
+  orderBy,
+  setDoc
+} from 'firebase/firestore';
 import { PRODUCTS as INITIAL_PRODUCTS, CATEGORIES as INITIAL_CATEGORIES } from '../data/products';
 
 const AdminContext = createContext();
@@ -10,46 +23,58 @@ export const AdminProvider = ({ children }) => {
     return sessionStorage.getItem('pb_admin_auth') === 'true';
   });
 
-  // Products stored in localStorage so admin changes persist
-  const [products, setProducts] = useState(() => {
-    const saved = localStorage.getItem('pb_products');
-    return saved ? JSON.parse(saved) : INITIAL_PRODUCTS;
-  });
+  const [products, setProducts] = useState([]);
+  const [categories, setCategories] = useState([]);
+  const [orders, setOrders] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-  const [categories, setCategories] = useState(() => {
-    const saved = localStorage.getItem('pb_categories');
-    return saved ? JSON.parse(saved) : INITIAL_CATEGORIES;
-  });
-
-  // Fake orders for demo
-  const [orders, setOrders] = useState(() => {
-    const saved = localStorage.getItem('pb_orders');
-    return saved ? JSON.parse(saved) : [
-      { id: 'ORD-001', customer: 'Rahul Sharma', email: 'rahul@email.com', date: '2026-03-15', items: 2, total: 2998, status: 'Delivered', city: 'Mumbai' },
-      { id: 'ORD-002', customer: 'Arjun Mehta', email: 'arjun@email.com', date: '2026-03-16', items: 1, total: 1499, status: 'Shipped', city: 'Delhi' },
-      { id: 'ORD-003', customer: 'Vikram Singh', email: 'vikram@email.com', date: '2026-03-17', items: 3, total: 4797, status: 'Processing', city: 'Bengaluru' },
-      { id: 'ORD-004', customer: 'Dev Patel', email: 'dev@email.com', date: '2026-03-17', items: 1, total: 2499, status: 'Pending', city: 'Pune' },
-    ];
-  });
-
-  useEffect(() => { localStorage.setItem('pb_products', JSON.stringify(products)); }, [products]);
-  useEffect(() => { localStorage.setItem('pb_categories', JSON.stringify(categories)); }, [categories]);
-  useEffect(() => { localStorage.setItem('pb_orders', JSON.stringify(orders)); }, [orders]);
-
-  // AUTO-SYNC SOURCE CODE TO LOCALSTORAGE
+  // 1. Live Sync Products & Categories from Firestore
   useEffect(() => {
-    // Increment this whenever you update INITIAL_PRODUCTS or INITIAL_CATEGORIES
-    const CURRENT_VERSION = "v1.0.3"; 
-    const savedVersion = localStorage.getItem('pb_data_version');
-    
-    if (savedVersion !== CURRENT_VERSION) {
-      localStorage.setItem('pb_products', JSON.stringify(INITIAL_PRODUCTS));
-      localStorage.setItem('pb_categories', JSON.stringify(INITIAL_CATEGORIES));
-      localStorage.setItem('pb_data_version', CURRENT_VERSION);
-      // Force state update to match new initial data
-      setProducts(INITIAL_PRODUCTS);
-      setCategories(INITIAL_CATEGORIES);
-    }
+    const qProducts = query(collection(db, 'products'));
+    const unsubscribeProducts = onSnapshot(qProducts, (snapshot) => {
+      const data = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+      setProducts(data);
+      setLoading(false);
+    });
+
+    const qCategories = query(collection(db, 'categories'));
+    const unsubscribeCategories = onSnapshot(qCategories, (snapshot) => {
+      const data = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+      setCategories(data);
+    });
+
+    const qOrders = query(collection(db, 'orders'), orderBy('date', 'desc'));
+    const unsubscribeOrders = onSnapshot(qOrders, (snapshot) => {
+      const data = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+      setOrders(data);
+    });
+
+    return () => {
+      unsubscribeProducts();
+      unsubscribeCategories();
+      unsubscribeOrders();
+    };
+  }, []);
+
+  // 2. Initial Seeding (If Firestore is empty)
+  useEffect(() => {
+    const seed = async () => {
+      const prodSnap = await getDocs(collection(db, 'products'));
+      if (prodSnap.empty) {
+        console.log("Seeding initial products to Firebase...");
+        for (const p of INITIAL_PRODUCTS) {
+          await setDoc(doc(db, 'products', p.id), p);
+        }
+      }
+      const catSnap = await getDocs(collection(db, 'categories'));
+      if (catSnap.empty) {
+        console.log("Seeding initial categories to Firebase...");
+        for (const c of INITIAL_CATEGORIES) {
+          await setDoc(doc(db, 'categories', c.id), c);
+        }
+      }
+    };
+    seed();
   }, []);
 
   const login = (username, password) => {
@@ -67,58 +92,51 @@ export const AdminProvider = ({ children }) => {
   };
 
   // Product CRUD
-  const addProduct = (product) => {
-    const newProduct = {
-      ...product,
-      id: `p${Date.now()}`,
-      slug: product.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, ''),
-    };
-    setProducts(prev => [newProduct, ...prev]);
-    return newProduct;
+  const addProduct = async (product) => {
+    const slug = product.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+    const newProduct = { ...product, slug };
+    const docRef = await addDoc(collection(db, 'products'), newProduct);
+    return { id: docRef.id, ...newProduct };
   };
 
-  const updateProduct = (id, updates) => {
-    setProducts(prev => prev.map(p => p.id === id ? { ...p, ...updates } : p));
+  const updateProduct = async (id, updates) => {
+    const docRef = doc(db, 'products', id);
+    await updateDoc(docRef, updates);
   };
 
-  const deleteProduct = (id) => {
-    setProducts(prev => prev.filter(p => p.id !== id));
+  const deleteProduct = async (id) => {
+    await deleteDoc(doc(db, 'products', id));
   };
 
-  // Category CRUD
-  const addCategory = (category) => {
-    const newCat = {
-      ...category,
-      id: category.name.toLowerCase().replace(/\s+/g, '_'),
-      slug: category.name.toLowerCase().replace(/[^a-z0-9]+/g, '-'),
-    };
-    setCategories(prev => [...prev, newCat]);
+  const addCategory = async (category) => {
+    const id = category.name.toLowerCase().replace(/\s+/g, '_');
+    const slug = category.name.toLowerCase().replace(/[^a-z0-9]+/g, '-');
+    await setDoc(doc(db, 'categories', id), { ...category, id, slug });
   };
 
-  const updateCategory = (id, updates) => {
-    setCategories(prev => prev.map(c => c.id === id ? { ...c, ...updates } : c));
+  const updateCategory = async (id, updates) => {
+    await updateDoc(doc(db, 'categories', id), updates);
   };
 
-  const deleteCategory = (id) => {
-    setCategories(prev => prev.filter(c => c.id !== id));
+  const deleteCategory = async (id) => {
+    await deleteDoc(doc(db, 'categories', id));
   };
 
-  const updateOrderStatus = (id, status) => {
-    setOrders(prev => prev.map(o => o.id === id ? { ...o, status } : o));
-  };
-
-  const addOrder = (order) => {
+  const addOrder = async (order) => {
     const newOrder = {
       ...order,
-      id: `ORD-${Math.random().toString(36).substr(2, 6).toUpperCase()}`,
-      date: new Date().toISOString().split('T')[0],
+      orderId: `ORD-${Math.random().toString(36).substr(2, 6).toUpperCase()}`,
+      date: new Date().toISOString(),
       status: 'Pending',
     };
-    setOrders(prev => [newOrder, ...prev]);
-    return newOrder;
+    await addDoc(collection(db, 'orders'), newOrder);
   };
 
-  const totalRevenue = orders.reduce((sum, o) => sum + o.total, 0);
+  const updateOrderStatus = async (id, status) => {
+    await updateDoc(doc(db, 'orders', id), { status });
+  };
+
+  const totalRevenue = orders.reduce((sum, o) => sum + (Number(o.total) || 0), 0);
 
   return (
     <AdminContext.Provider value={{
@@ -126,7 +144,7 @@ export const AdminProvider = ({ children }) => {
       products, addProduct, updateProduct, deleteProduct,
       categories, addCategory, updateCategory, deleteCategory,
       orders, addOrder, updateOrderStatus,
-      totalRevenue,
+      totalRevenue, loading
     }}>
       {children}
     </AdminContext.Provider>
