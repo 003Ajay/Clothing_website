@@ -22,6 +22,7 @@ const RESPONSIVE_CSS = `
     .pdp-size-grid {
       display: grid !important;
       grid-template-columns: repeat(4, 1fr) !important;
+      gap: 10px !important;
     }
     .pdp-size-header {
       flex-direction: row !important;
@@ -107,22 +108,7 @@ const ProductDetailPage = () => {
     <main style={{ background: '#fff', minHeight: '100vh', paddingTop: 0, overflowX: 'hidden' }}>
       <style>{RESPONSIVE_CSS}</style>
       
-      {/* 1. Mobile Header (Back | Logo | Icons) */}
-      <header className="catalog-header lg-hidden" style={{ top: 0, position: 'fixed' }}>
-        <button onClick={() => navigate(-1)} style={{ background:'none', border:'none', padding:0, cursor:'pointer' }}>
-          <ArrowLeft size={22} />
-        </button>
-        <div style={{ flex:1, display:'flex', justifyContent:'center' }}>
-          <img src="/logo.svg" alt="Porter & Boat" style={{ height: 28 }} />
-        </div>
-        <div style={{ display:'flex', gap: 16, alignItems:'center' }}>
-          <Search size={22} />
-          <Heart size={22} />
-          <ShoppingBag size={22} onClick={() => setIsCartOpen(true)} />
-        </div>
-      </header>
-
-      <div style={{ paddingTop: 56, paddingBottom: 100 }}>
+      <div style={{ paddingTop: 80, paddingBottom: 100 }}>
         {/* Product Layout Grid */}
         <div className="pdp-grid" style={{ maxWidth: 1200, margin: '0 auto', display: 'grid', gridTemplateColumns: 'minmax(0, 1.3fr) 0.7fr', alignItems: 'start', width: '100%' }}>
           
@@ -197,7 +183,11 @@ const ProductDetailPage = () => {
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 4 }}>
               <h1 
                 className="pdp-title"
-                style={{ fontFamily: 'Outfit, sans-serif', fontSize: '1.25rem', fontWeight: 800, textTransform: 'none', color: '#333', flex: 1 }}
+                style={{ 
+                  fontFamily: 'Outfit, sans-serif', fontSize: '1.25rem', fontWeight: 800, 
+                  textTransform: 'none', color: '#333', flex: 1,
+                  whiteSpace: 'normal', wordBreak: 'break-word', lineHeight: 1.3
+                }}
               >
                 {product.name}
               </h1>
@@ -230,8 +220,8 @@ const ProductDetailPage = () => {
             </div>
 
             {/* Color/Variant Selection */}
-            <div style={{ marginBottom: 40 }}>
-              <div className="no-scrollbar" style={{ display: 'flex', gap: 10, overflowX: 'auto', marginBottom: 8 }}>
+            <div style={{ marginBottom: 40, width: '100%', boxSizing: 'border-box' }}>
+              <div className="no-scrollbar" style={{ display: 'flex', gap: 10, overflowX: 'auto', marginBottom: 8, width: '100%', paddingBottom: 4 }}>
                 {variants.map((v, i) => (
                   <button
                     key={i}
@@ -239,15 +229,16 @@ const ProductDetailPage = () => {
                     style={{ 
                       flex: '0 0 76px', 
                       height: 94, 
-                      borderRadius: 2, 
+                      borderRadius: 4, 
                       overflow: 'hidden', 
-                      border: activeVariant.name === v.name ? '2.5px solid #000' : '2.5px solid transparent',
-                      padding: 1,
+                      border: activeVariant.name === v.name ? '2px solid #000' : '1px solid #eee',
+                      padding: 2,
                       background: '#fff',
-                      cursor: 'pointer'
+                      cursor: 'pointer',
+                      flexShrink: 0
                     }}
                   >
-                    <img src={v.img} style={{ width: '100%', height: '100%', objectFit: 'cover', filter: v.filter }} />
+                    <img src={v.img} style={{ width: '100%', height: '100%', objectFit: 'cover', filter: v.filter, borderRadius: 2 }} />
                   </button>
                 ))}
               </div>
@@ -259,13 +250,13 @@ const ProductDetailPage = () => {
               <div style={{ display:'flex', justifyContent:'space-between', marginBottom: 16 }}>
                  <p style={{ fontSize: 13, fontWeight: 800 }}>Please select a size. <span style={{ color:'#000', textDecoration:'underline', marginLeft: 8, cursor:'pointer' }}>SIZE CHART</span></p>
               </div>
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 8 }}>
+              <div className="pdp-size-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 10 }}>
                 {['XXS', 'XS', 'S', 'M', 'L', 'XL', 'XXL', '3XL'].map(s => (
                   <button
                     key={s}
                     onClick={() => setSelectedSize(s)}
                     style={{
-                      padding: '12px 0',
+                      padding: '12px 4px',
                       border: `1.5px solid ${selectedSize === s ? '#000' : '#eee'}`,
                       background: '#fff',
                       fontWeight: 800,
@@ -273,7 +264,9 @@ const ProductDetailPage = () => {
                       borderRadius: 4,
                       cursor: 'pointer',
                       color: s === 'XXS' ? '#ccc' : '#000',
-                      textDecoration: s === 'XXS' ? 'line-through' : 'none'
+                      textDecoration: s === 'XXS' ? 'line-through' : 'none',
+                      width: '100%',
+                      boxSizing: 'border-box'
                     }}
                   >
                     {s}
