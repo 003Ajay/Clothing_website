@@ -41,14 +41,20 @@ const Footer = () => {
           }
         }
         @media (max-width: 600px) {
+          footer {
+            padding: 40px 0 !important;
+          }
           .footer-grid { 
-            grid-template-columns: 1fr !important;
-            gap: 32px !important;
+            display: none !important;
           }
           .footer-bottom {
             flex-direction: column !important;
-            align-items: flex-start !important;
-            text-align: left !important;
+            align-items: center !important;
+            text-align: center !important;
+            gap: 20px !important;
+          }
+          .mobile-footer-logo {
+            display: block !important;
           }
         }
       `}</style>
@@ -95,6 +101,11 @@ const Footer = () => {
 
         {/* Bottom */}
         <div className="footer-bottom" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '24px 0', flexWrap: 'wrap', gap: 16 }}>
+          <div className="mobile-footer-logo" style={{ display: 'none' }}>
+            <Link to="/" style={{ fontFamily: 'Outfit,sans-serif', fontWeight: 900, fontSize: 18, letterSpacing: '-0.05em', color: '#fff', textDecoration: 'none' }}>
+              PORTER & BOAT
+            </Link>
+          </div>
           <p style={{ fontSize: 12, color: '#6b7280' }}>
             © {year} Porter & Boat. All rights reserved.
           </p>
